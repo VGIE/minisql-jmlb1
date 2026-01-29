@@ -24,8 +24,15 @@ namespace DbManager
         public void SetValue(string columnName, string value)
         {
             //TODO DEADLINE 1.A: Given a column name and value, change the value in that column
-
-            
+            String cambio = "";
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if (ColumnDefinitions[i].Name == columnName)
+                {
+                    //esta mal
+                    value = Values.Contains(columnName).ToString();   
+                }
+            }
         }
 
         public string GetValue(string columnName)
@@ -61,6 +68,7 @@ namespace DbManager
         private static string Encode(string value)
         {
             //TODO DEADLINE 1.C: Encode the delimiter in value
+            //Guardar el nombre y codificar (teniendo en cuenta el delimintador)
 
             
             return null;
@@ -78,6 +86,7 @@ namespace DbManager
         public string AsText()
         {
             //TODO DEADLINE 1.C: Return the row as string with all values separated by the delimiter
+            //de ColumnDefinition a text
             
             return null;
             
@@ -86,6 +95,7 @@ namespace DbManager
         public static Row Parse(List<ColumnDefinition> columns, string value)
         {
             //TODO DEADLINE 1.C: Parse a rowReturn the row as string with all values separated by the delimiter
+            //de text a ColumnDefinition
             
             return null;
             
