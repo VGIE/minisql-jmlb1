@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Schema;
 
 namespace DbManager
 {
@@ -16,8 +17,8 @@ namespace DbManager
         public Row(List<ColumnDefinition> columnDefinitions, List<string> values)
         {
             //TODO DEADLINE 1.A: Initialize member variables
-
-            
+            this.ColumnDefinitions = columnDefinitions;
+            this.Values = values;        
         }
 
         public void SetValue(string columnName, string value)
@@ -30,10 +31,18 @@ namespace DbManager
         public string GetValue(string columnName)
         {
             //TODO DEADLINE 1.A: Given a column name, return the value in that column
+            String resultado = "";
 
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if (ColumnDefinitions[i].Name == columnName)
+                {
+                    resultado = Values.Contains(columnName).ToString();
+                    return resultado;
+                }
+            } 
             
-            return null;
-            
+           return resultado;
         }
 
         public bool IsTrue(Condition condition)
