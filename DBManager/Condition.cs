@@ -32,6 +32,76 @@ namespace DbManager
             //int.parse() --> string en int
             //double.parse() --> string en double
 
+            //si el tipo de columna es entero
+            if(type == ColumnDefinition.DataType.Int)
+            {
+                //los valores de string --> entero
+                int value1 = int.Parse(value);
+                int value2 = int.Parse(LiteralValue);
+
+                if(Operator == ">")
+                {
+                    return value1 > value2;
+                }
+
+                if (Operator == "<")
+                {
+                    return value1 < value2;
+                }
+
+                if (Operator == "=")
+                {
+                    return value1 == value2;
+                }
+            }
+            if (type == ColumnDefinition.DataType.Double)
+            {
+                // string --> decimal
+                double value1 = double.Parse(value);
+                double value2 = double.Parse(LiteralValue);
+
+                if (Operator == ">")
+                {
+                    return value1 > value2;
+                }
+
+                if (Operator == "<")
+                {
+                    return value1 < value2;
+                }
+
+                if (Operator == "=")
+                {
+                    return value1 == value2;
+                }
+
+            }
+            if(type == ColumnDefinition.DataType.String)
+            {
+                //la comparación devuelve un número
+                int comparacion = string.Compare(value, LiteralValue);
+                // comparacion = 0 --> los dos valores son iguales
+                // comparacion > 0 --> value es mayor que literalValue
+                // comparación < 0 --> value es mas pequeñeo que literalValue
+
+                if (Operator == ">")
+                {
+                    //si el primer valor es más grande que el segundo devolverá 'true'
+                    //en los demás casos devuelve 'false'
+                    return comparacion > 0;
+                }
+
+                if (Operator == "<")
+                {
+                    return comparacion < 0;
+                }
+
+                if (Operator == "=")
+                {
+                    return comparacion == 0;
+                }
+            }
+
             return false;
             
         }
