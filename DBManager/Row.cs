@@ -24,13 +24,12 @@ namespace DbManager
         public void SetValue(string columnName, string value)
         {
             //TODO DEADLINE 1.A: Given a column name and value, change the value in that column
-            String cambio = "";
             for (int i = 0; i < ColumnDefinitions.Count; i++)
             {
                 if (ColumnDefinitions[i].Name == columnName)
                 {
-                    //esta mal
-                    value = Values.Contains(columnName).ToString();   
+                    //Values.Contains(columnName).ToString().Replace(GetValue(columnName), value);
+                    Values[i] = value;
                 }
             }
         }
@@ -38,17 +37,16 @@ namespace DbManager
         public string GetValue(string columnName)
         {
             //TODO DEADLINE 1.A: Given a column name, return the value in that column
-            String resultado = "";
+            String resultado = null;
 
             for (int i = 0; i < ColumnDefinitions.Count; i++)
             {
                 if (ColumnDefinitions[i].Name == columnName)
                 {
-                    resultado = Values.Contains(columnName).ToString();
+                    resultado = Values[i];
                     return resultado;
                 }
             } 
-            
            return resultado;
         }
 
