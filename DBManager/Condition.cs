@@ -15,7 +15,9 @@ namespace DbManager
         public Condition(string column, string op, string literalValue)
         {
             //TODO DEADLINE 1A: Initialize member variables
-            
+            this.ColumnName = column;
+            this.Operator = op;
+            this.LiteralValue = literalValue;
         }
 
 
