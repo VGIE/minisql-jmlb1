@@ -33,7 +33,7 @@ namespace OurTests
             Condition condition5 = new Condition("Year", "<", "2026");
             Assert.True(condition5.IsTrue("2025", ColumnDefinition.DataType.Int));
             Assert.False(condition5.IsTrue("2026", ColumnDefinition.DataType.Int));
-            Assert.False(condition5.IsTrue("2023", ColumnDefinition.DataType.Int));
+            Assert.False(condition5.IsTrue("2030", ColumnDefinition.DataType.Int));
 
             Condition condition6 = new Condition("Age", "=", "21");
             Assert.True(condition6.IsTrue("21", ColumnDefinition.DataType.Int));
