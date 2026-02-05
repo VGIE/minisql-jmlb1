@@ -8,6 +8,11 @@ namespace DbManager
 {
     public class Condition
     {
+        public const string MayorQue = ">";
+        public const string MenorQue = "<";
+        public const string Iguales = "=";
+
+
         public string ColumnName { get; private set; }
         public string Operator { get; private set; } // >/>/=
         public string LiteralValue { get; private set; }
@@ -39,17 +44,17 @@ namespace DbManager
                 int value1 = int.Parse(value);
                 int value2 = int.Parse(LiteralValue);
 
-                if(Operator == ">")
+                if(Operator == MayorQue)
                 {
                     return value1 > value2;
                 }
 
-                if (Operator == "<")
+                if (Operator == MenorQue)
                 {
                     return value1 < value2;
                 }
 
-                if (Operator == "=")
+                if (Operator == Iguales)
                 {
                     return value1 == value2;
                 }
@@ -60,17 +65,17 @@ namespace DbManager
                 double value1 = double.Parse(value);
                 double value2 = double.Parse(LiteralValue);
 
-                if (Operator == ">")
+                if (Operator == MayorQue)
                 {
                     return value1 > value2;
                 }
 
-                if (Operator == "<")
+                if (Operator == MenorQue)
                 {
                     return value1 < value2;
                 }
 
-                if (Operator == "=")
+                if (Operator == Iguales)
                 {
                     return value1 == value2;
                 }
@@ -84,19 +89,19 @@ namespace DbManager
                 // comparacion > 0 --> value es mayor que literalValue
                 // comparación < 0 --> value es mas pequeñeo que literalValue
 
-                if (Operator == ">")
+                if (Operator == MayorQue)
                 {
                     //si el primer valor es más grande que el segundo devolverá 'true'
                     //en los demás casos devuelve 'false'
                     return comparacion > 0;
                 }
 
-                if (Operator == "<")
+                if (Operator == MenorQue)
                 {
                     return comparacion < 0;
                 }
 
-                if (Operator == "=")
+                if (Operator == Iguales)
                 {
                     return comparacion == 0;
                 }
