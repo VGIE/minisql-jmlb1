@@ -28,7 +28,6 @@ namespace DbManager
             {
                 if (ColumnDefinitions[i].Name == columnName)
                 {
-                    //Values.Contains(columnName).ToString().Replace(GetValue(columnName), value);
                     Values[i] = value;
                 }
             }
@@ -55,10 +54,18 @@ namespace DbManager
             //TODO DEADLINE 1.A: Given a condition (column name, operator and literal value, return whether it is true or not
             //for this row. Check Condition.IsTrue method
 
-            
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if ()
+                {
+                    
+                    return true;
+                }
+            }
             return false;
-            
         }
+            
+        
 
         private const string Delimiter = ":";
         private const string DelimiterEncoded = "[SEPARATOR]";
