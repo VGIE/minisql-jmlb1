@@ -9,7 +9,7 @@ namespace DbManager
     public class Condition
     {
         public string ColumnName { get; private set; }
-        public string Operator { get; private set; } // >/</=
+        public string Operator { get; private set; } // >/>/=
         public string LiteralValue { get; private set; }
 
         public Condition(string column, string op, string literalValue)
