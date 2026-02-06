@@ -34,7 +34,7 @@ namespace DbManager
         public void AddRow(Row row)
         {
             //TODO DEADLINE 1.A: Add a new row
-            if(row == null && ColumnDefinitions.Count != row.Values.Count)
+            if(row == null || ColumnDefinitions.Count != row.Values.Count)
             {
                 return;
             }
