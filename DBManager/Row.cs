@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Schema;
 
 namespace DbManager
 {
@@ -16,25 +17,37 @@ namespace DbManager
         public Row(List<ColumnDefinition> columnDefinitions, List<string> values)
         {
             //TODO DEADLINE 1.A: Initialize member variables
-      
-            
-            
+            this.ColumnDefinitions = columnDefinitions;
+            this.Values = values;        
         }
 
         public void SetValue(string columnName, string value)
         {
             //TODO DEADLINE 1.A: Given a column name and value, change the value in that column
-
-            
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if (ColumnDefinitions[i].Name == columnName)
+                {
+                    //Values.Contains(columnName).ToString().Replace(GetValue(columnName), value);
+                    Values[i] = value;
+                }
+            }
         }
 
         public string GetValue(string columnName)
         {
             //TODO DEADLINE 1.A: Given a column name, return the value in that column
+            String resultado = null;
 
-            
-            return null;
-            
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if (ColumnDefinitions[i].Name == columnName)
+                {
+                    resultado = Values[i];
+                    return resultado;
+                }
+            } 
+           return resultado;
         }
 
         public bool IsTrue(Condition condition)
@@ -53,6 +66,7 @@ namespace DbManager
         private static string Encode(string value)
         {
             //TODO DEADLINE 1.C: Encode the delimiter in value
+            //Guardar el nombre y codificar (teniendo en cuenta el delimintador)
 
             
             return null;
@@ -70,6 +84,7 @@ namespace DbManager
         public string AsText()
         {
             //TODO DEADLINE 1.C: Return the row as string with all values separated by the delimiter
+            //de ColumnDefinition a text
             
             return null;
             
@@ -78,6 +93,7 @@ namespace DbManager
         public static Row Parse(List<ColumnDefinition> columns, string value)
         {
             //TODO DEADLINE 1.C: Parse a rowReturn the row as string with all values separated by the delimiter
+            //de text a ColumnDefinition
             
             return null;
             
