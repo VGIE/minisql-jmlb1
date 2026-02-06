@@ -125,9 +125,32 @@ namespace DbManager
         {
             //TODO DEADLINE 1.A: Update all the rows where the condition is true using all the SetValues (ColumnName-Value). If condition is null,
             //return false, otherwise return true
-            
-            return false;
-            
+
+            /*int index = -1;
+            //Buscamos el indice de la columna de la condicion
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            {
+                if (ColumnDefinitions[i].Name == condition.ColumnName)
+                {
+                    index = i;
+                }
+            }
+
+            if(index != -1)
+            {
+                for (int j = 0; j < Rows.Count; j++)
+                {
+                    // Obtenemos la fila actual
+                    Row filaActual = Rows[j];
+
+                    // Obtenemos el valor de la columna que queremos mirar
+                    //hay que utilizar el ColumnIndexByName
+                    string valorParaValidar = filaActual.GetValue(index);
+                    ColumnDefinition.DataType tipoCol = ColumnDefinitions[index].Type;
+                }
+
+            }*/
+            return false;            
         }
 
 
