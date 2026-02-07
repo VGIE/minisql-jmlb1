@@ -13,30 +13,47 @@ namespace OurTests
 
         }
         */
-        /*
+
 
         [Fact]
         public void TestGetRow()
         {
-            Table tabla = new Table("TestTable", new List<ColumnDefinition>()
+            // Primero crear las columnas
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
             {
                 new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
                 new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
                 new ColumnDefinition(ColumnDefinition.DataType.Int, "Age")
-            });
+            };
 
-            tabla.Insert(new List<string>() { "Rodolfo", "1.62", "25" });
-            tabla.Insert(new List<string>() { "Maider", "1.67", "67" });
-            tabla.Insert(new List<string>() { "Rodolfo", "1.55", "51" });
+            Table tabla = new Table("TestTable", columnas);
+
+            // Usar AddRow con objetos Row
+            Row fila1 = new Row(columnas, new List<string>() { "Rodolfo", "1.62", "25" });
+            Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
+            Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
+
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+
+            // Verificar que hay filas
+            Assert.Equal(3, tabla.NumRows());
 
             //filas que existen
             Row fila0 = tabla.GetRow(0);
             Assert.NotNull(fila0);
             Assert.Equal("Rodolfo", fila0.Values[0]);
-            Row fila1 = tabla.GetRow(1);
-            Assert.NotNull(fila1);
-            Assert.Equal("Maider", fila1.Values[0]);
-            Assert.Equal("67", fila1.Values[2]);
+
+            Row fila1obtenida = tabla.GetRow(1);
+            Assert.NotNull(fila1obtenida);
+            Assert.Equal("Maider", fila1obtenida.Values[0]);
+            Assert.Equal("67", fila1obtenida.Values[2]);
+
+            Row fila2obtenida = tabla.GetRow(2);
+            Assert.NotNull(fila2obtenida);
+            Assert.Equal("Pepe", fila2obtenida.Values[0]);
+
             //filas que no existen
             Assert.Null(tabla.GetRow(-1));
             Assert.Null(tabla.GetRow(3));
@@ -62,6 +79,62 @@ namespace OurTests
             Assert.Equal("Maria", tabla.GetRow(0).Values[0]);
             Assert.Equal("1.70", tabla.GetRow(1).Values[1]);
         }
-        */
+
+        [Fact]     
+        public void TestNumRows()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name")
+            };
+            Table tabla = new Table("Nombres", columnas);
+            //tabla vacia
+            Assert.Equal(0, tabla.NumRows());
+
+            tabla.AddRow(new Row(columnas, new List<string> { "Rodolfo" }));
+            tabla.AddRow(new Row(columnas, new List<string> { "Maider" }));
+            tabla.AddRow(new Row(columnas, new List<string> { "Pepe" }));
+            //tabla no vacia
+            Assert.Equal(3, tabla.NumRows());
+
+        }
+
+        [Fact]
+        public void TestGetColumn()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+            //columnas que existen 
+            Assert.Equal("Name", tabla.GetColumn(0).Name);
+            Assert.Equal("Height", tabla.GetColumn(1).Name);
+            Assert.Equal("Age", tabla.GetColumn(2).Name);
+            //columnas que no existen
+            Assert.Null(tabla.GetColumn(-1));
+            Assert.Null(tabla.GetColumn(3));
+        }
+
+        [Fact]
+        public void TestNumColumns()
+        {
+            //vacia
+            List<ColumnDefinition> columnas0 = new List<ColumnDefinition>();
+            Table tabla = new Table("Vacía", columnas0);
+            //no vacia
+            List<ColumnDefinition> columnas1 = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+            Table tabla1 = new Table("TestTable", columnas1);
+            Assert.Equal(0, tabla.NumColumns());
+            Assert.Equal(3, tabla1.NumColumns());
+        }
     }
 }
