@@ -136,5 +136,83 @@ namespace OurTests
             Assert.Equal(0, tabla.NumColumns());
             Assert.Equal(3, tabla1.NumColumns());
         }
+
+        [Fact]
+        public void TestColumnByName()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+            //nombres existen
+            Assert.Equal("Name", tabla.ColumnByName("Name").Name);
+            Assert.Equal("Height", tabla.ColumnByName("Height").Name);
+            Assert.Equal("Age", tabla.ColumnByName("Age").Name);
+            //nombres que no existen
+            Assert.Null(tabla.ColumnByName("Year"));
+            Assert.Null(tabla.ColumnByName(""));
+            Assert.Null(tabla.ColumnByName(null));
+
+        }
+
+        [Fact]
+        public void TestColumnIndexByName()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+            //nombres existen
+            Assert.Equal(0, tabla.ColumnIndexByName("Name"));
+            Assert.Equal(1, tabla.ColumnIndexByName("Height"));
+            Assert.Equal(2, tabla.ColumnIndexByName("Age"));
+            //nombres no existen
+            Assert.Equal(-1, tabla.ColumnIndexByName("Year"));
+            Assert.Equal(-1, tabla.ColumnIndexByName(""));
+            Assert.Equal(-1, tabla.ColumnIndexByName(null));
+
+        }
+
+        [Fact]
+        public void TestToString()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+
+            //tabla sin filas
+            string resultadoVacio = tabla.ToString();
+            Assert.Equal("['Name','Height','Age']", resultadoVacio);
+
+            //na fila
+            tabla.AddRow(new Row(columnas, new List<string>() { "Juan", "1.75", "30" }));
+            string resultadoUnaFila = tabla.ToString();
+            Assert.Equal("['Name','Height','Age']{'Juan','1.75','30'}", resultadoUnaFila);
+
+            //con más filas
+            tabla.AddRow(new Row(columnas, new List<string>() { "Ana", "1.65", "25" }));
+            tabla.AddRow(new Row(columnas, new List<string>() { "Luis", "1.80", "35" }));
+
+            string resultadoTresFilas = tabla.ToString();
+            Assert.Equal("['Name','Height','Age']{'Juan','1.75','30'}{'Ana','1.65','25'}{'Luis','1.80','35'}", resultadoTresFilas);
+
+            //tabla sin columnas
+            List<ColumnDefinition> sinColumnas = new List<ColumnDefinition>();
+            Table tablaVacia = new Table("Vacía", sinColumnas);
+            Assert.Equal("", tablaVacia.ToString());
+        }
     }
 }
