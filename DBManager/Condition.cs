@@ -8,6 +8,10 @@ namespace DbManager
 {
     public class Condition
     {
+        public const string MayorQue = ">";
+        public const string MenorQue = "<";
+        public const string IgualQue = "=";
+
         public string ColumnName { get; private set; }
         public string Operator { get; private set; } // >/>/=
         public string LiteralValue { get; private set; }
@@ -39,19 +43,14 @@ namespace DbManager
                 int value1 = int.Parse(value);
                 int value2 = int.Parse(LiteralValue);
 
-                if(Operator == ">")
+                switch(Operator)
                 {
-                    return value1 > value2;
-                }
-
-                if (Operator == "<")
-                {
-                    return value1 < value2;
-                }
-
-                if (Operator == "=")
-                {
-                    return value1 == value2;
+                    case MayorQue:
+                        return value1 > value2;
+                    case MenorQue:
+                        return value1 < value2;
+                    case IgualQue:
+                        return value1 == value2;
                 }
             }
             if (type == ColumnDefinition.DataType.Double)
@@ -60,19 +59,14 @@ namespace DbManager
                 double value1 = double.Parse(value);
                 double value2 = double.Parse(LiteralValue);
 
-                if (Operator == ">")
+                switch (Operator)
                 {
-                    return value1 > value2;
-                }
-
-                if (Operator == "<")
-                {
-                    return value1 < value2;
-                }
-
-                if (Operator == "=")
-                {
-                    return value1 == value2;
+                    case MayorQue:
+                        return value1 > value2;
+                    case MenorQue:
+                        return value1 < value2;
+                    case IgualQue:
+                        return value1 == value2;
                 }
 
             }
@@ -84,21 +78,14 @@ namespace DbManager
                 // comparacion > 0 --> value es mayor que literalValue
                 // comparación < 0 --> value es mas pequeñeo que literalValue
 
-                if (Operator == ">")
+                switch(Operator)
                 {
-                    //si el primer valor es más grande que el segundo devolverá 'true'
-                    //en los demás casos devuelve 'false'
-                    return comparacion > 0;
-                }
-
-                if (Operator == "<")
-                {
-                    return comparacion < 0;
-                }
-
-                if (Operator == "=")
-                {
-                    return comparacion == 0;
+                    case MayorQue:
+                        return comparacion > 0;
+                    case MenorQue:
+                        return comparacion < 0;
+                    case IgualQue:
+                        return comparacion == 0;
                 }
             }
 
