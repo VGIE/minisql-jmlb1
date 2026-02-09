@@ -82,8 +82,39 @@ namespace DbManager
             //return false and set LastErrorMessage with the appropriate error (Check Constants.cs)
             //Do the same if no column is provided
             //If everything goes ok, set LastErrorMessage with the appropriate success message (Check Constants.cs)
+
+            //mirar si ya existe una tabla con ese nombre
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    LastErrorMessage = Constants.TableAlreadyExistsError;
+                    return false;
+                    
+                }
+            }
+
+            //comprobar que nos de la columna
+      
+            if(ColumnDefinition == null)
+            {
+                LastErrorMessage = Constants.DatabaseCreatedWithoutColumnsError;
+                return false;
             
-            return false;
+            }
+            //comprobar que no este vacía
+            else if(ColumnDefinition.Count == 0)
+            {
+                LastErrorMessage = Constants.DatabaseCreatedWithoutColumnsError;
+                return false;
+                
+            }
+
+
+            Table nuevaTabla = new Table(tableName, ColumnDefinition);
+            Tables.Add(nuevaTabla);
+            LastErrorMessage = Constants.CreateTableSuccess;
+            return true;
             
         }
 
@@ -91,6 +122,13 @@ namespace DbManager
         {
             //DEADLINE 1.B: Delete the table with the given name. If the table doesn't exist, return false and set LastErrorMessage
             //If everything goes ok, return true and set LastErrorMessage with the appropriate success message (Check Constants.cs)
+            for(int i =0; i< Tables.Count; i++)
+            {
+                if(Tables[i].Name == tableName)
+                {
+                    Tables.Remove(Tables[i]);
+                }
+            }
             
             return false;
         }
