@@ -142,6 +142,7 @@ namespace DbManager
                 res = res + "{";
                 for (int j=0; j<r.Values.Count; j++)
                 {
+                    ColumnIndexByName(j);
                     res = res + "'" + r.Values[j] + "'";
                     if(j < r.Values.Count - 1)
                     {
@@ -198,31 +199,22 @@ namespace DbManager
             //TODO DEADLINE 1.A: Update all the rows where the condition is true using all the SetValues (ColumnName-Value). If condition is null,
             //return false, otherwise return true
 
-            /*int index = -1;
-            //Buscamos el indice de la columna de la condicion
-            for (int i = 0; i < ColumnDefinitions.Count; i++)
+            //listaCondiciones = [0,3,5]
+            List<int> listaCondiciones = RowIndicesWhereConditionIsTrue (condition);
+
+            for(int i = 0; i < listaCondiciones.Count; i++)
             {
-                if (ColumnDefinitions[i].Name == condition.ColumnName)
+                int indiceFila = listaCondiciones[i];
+
+                for (int j = 0; j < setValues.Count; j++)
                 {
-                    index = i;
-                }
+                    //UPDATE tabla SET nombre = 'Ana' WHERE nombre='Pedro'
+                    //Cambiar el valor de ColumnName por Value
+                    Rows[indiceFila].SetValue(setValues[j].ColumnName, setValues[j].Value);
+                    
+                } 
             }
-
-            if(index != -1)
-            {
-                for (int j = 0; j < Rows.Count; j++)
-                {
-                    // Obtenemos la fila actual
-                    Row filaActual = Rows[j];
-
-                    // Obtenemos el valor de la columna que queremos mirar
-                    //hay que utilizar el ColumnIndexByName
-                    string valorParaValidar = filaActual.GetValue(index);
-                    ColumnDefinition.DataType tipoCol = ColumnDefinitions[index].Type;
-                }
-
-            }*/
-            return false;            
+            return true;            
         }
 
 
