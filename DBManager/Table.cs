@@ -166,9 +166,16 @@ namespace DbManager
         private List<int> RowIndicesWhereConditionIsTrue(Condition condition)
         {
             //TODO DEADLINE 1.A: Returns the indices of all the rows where the condition is true. Check Row.IsTrue()
-            
-            return null;
-            
+            List<int> indices = new List<int>();
+            for(int i = 0; i < Rows.Count; i++)
+            {
+                Row factual = Rows[i];
+                if (factual.IsTrue(condition))
+                {
+                    indices.Add(i);
+                }
+            }
+            return indices;
         }
 
         public void DeleteWhere(Condition condition)
