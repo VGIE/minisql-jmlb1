@@ -18,7 +18,6 @@ namespace OurTests
         [Fact]
         public void TestGetRow()
         {
-            // Primero crear las columnas
             List<ColumnDefinition> columnas = new List<ColumnDefinition>()
             {
                 new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
@@ -28,7 +27,7 @@ namespace OurTests
 
             Table tabla = new Table("TestTable", columnas);
 
-            // Usar AddRow con objetos Row
+            //Usar AddRow 
             Row fila1 = new Row(columnas, new List<string>() { "Rodolfo", "1.62", "25" });
             Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
             Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
@@ -37,7 +36,7 @@ namespace OurTests
             tabla.AddRow(fila2);
             tabla.AddRow(fila3);
 
-            // Verificar que hay filas
+            //hay filas
             Assert.Equal(3, tabla.NumRows());
 
             //filas que existen
@@ -197,7 +196,7 @@ namespace OurTests
             string resultadoVacio = tabla.ToString();
             Assert.Equal("['Name','Height','Age']", resultadoVacio);
 
-            //na fila
+            //una fila
             tabla.AddRow(new Row(columnas, new List<string>() { "Juan", "1.75", "30" }));
             string resultadoUnaFila = tabla.ToString();
             Assert.Equal("['Name','Height','Age']{'Juan','1.75','30'}", resultadoUnaFila);
@@ -213,6 +212,42 @@ namespace OurTests
             List<ColumnDefinition> sinColumnas = new List<ColumnDefinition>();
             Table tablaVacia = new Table("Vacía", sinColumnas);
             Assert.Equal("", tablaVacia.ToString());
+        }
+
+        [Fact]
+        public void TestDeleteIthRow()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+
+            Row fila1 = new Row(columnas, new List<string>() { "Rodolfo", "1.62", "25" });
+            Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
+            Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
+
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+
+            //eliminar maider
+            tabla.DeleteIthRow(1);
+            Assert.Equal(2, tabla.NumRows());
+            Assert.Equal("Rodolfo", tabla.GetRow(0).Values[0]);
+            Assert.Equal("Pepe", tabla.GetRow(1).Values[0]);
+
+            //eliminar rodolfo
+            tabla.DeleteIthRow(0);
+            Assert.Equal(1, tabla.NumRows());
+            Assert.Equal("Pepe", tabla.GetRow(0).Values[0]);
+
+            //eliminar última 
+            tabla.DeleteIthRow(0);
+            Assert.Equal(0, tabla.NumRows());
         }
     }
 }

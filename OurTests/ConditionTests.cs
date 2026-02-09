@@ -4,7 +4,7 @@ namespace OurTests
     public class ConditionTests
     {
         //TODO DEADLINE 1A : Create your own tests for Condition
-        /*
+        
         [Fact]
         public void TestString()
         {
@@ -65,6 +65,6 @@ namespace OurTests
             Assert.False(condition9.IsTrue("0.6", ColumnDefinition.DataType.Double));
 
         }
-        */
+        
     }
 }
