@@ -13,6 +13,7 @@ namespace DbManager
     {
         private List<Table> Tables = new List<Table>();
         private string m_username;
+        private string m_password;
 
         public string LastErrorMessage { get; private set; }
 
@@ -26,6 +27,10 @@ namespace DbManager
         public Database(string adminUsername, string adminPassword)
         {
             //DEADLINE 1.B: Initalize the member variables
+            m_username = adminUsername;
+
+            m_password = adminPassword;
+
             
         }
 
