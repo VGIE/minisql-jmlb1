@@ -43,7 +43,7 @@ namespace DbManager
                 if (ColumnDefinitions[i].Name == columnName)
                 {
                     resultado = Values[i];
-                    return resultado;
+                   return resultado;
                 }
             } 
            return resultado;
@@ -54,22 +54,23 @@ namespace DbManager
             //TODO DEADLINE 1.A: Given a condition (column name, operator and literal value, return whether it is true or not
             //for this row. Check Condition.IsTrue method
 
-            /*for (int i = 0; i < ColumnDefinitions.Count; i++)
+            for (int i = 0; i < ColumnDefinitions.Count; i++)
             {
-                if ()
+                if (ColumnDefinitions[i].Name.Equals(condition.ColumnName))
                 {
                     
-                    return true;
+                    return condition.IsTrue(Values[i] , ColumnDefinitions[i].Type);
                 }
+
             }
-            return false;*/
-            return false;
+           return false;
         }
             
         
 
         private const string Delimiter = ":";
         private const string DelimiterEncoded = "[SEPARATOR]";
+
 
         private static string Encode(string value)
         {
