@@ -204,9 +204,23 @@ namespace DbManager
         {
             //TODO DEADLINE 1.A: Update all the rows where the condition is true using all the SetValues (ColumnName-Value). If condition is null,
             //return false, otherwise return true
-            
-            return false;
-            
+
+            //listaCondiciones = [0,3,5]
+            List<int> listaCondiciones = RowIndicesWhereConditionIsTrue (condition);
+
+            for(int i = 0; i < listaCondiciones.Count; i++)
+            {
+                int indiceFila = listaCondiciones[i];
+
+                for (int j = 0; j < setValues.Count; j++)
+                {
+                    //UPDATE tabla SET nombre = 'Ana' WHERE nombre='Pedro'
+                    //Cambiar el valor de ColumnName por Value
+                    Rows[indiceFila].SetValue(setValues[j].ColumnName, setValues[j].Value);
+                    
+                } 
+            }
+            return true;            
         }
 
 
