@@ -37,14 +37,40 @@ namespace DbManager
         public bool AddTable(Table table)
         {
             //DEADLINE 1.B: Add a new table to the database
-            
-            return false;
+
+            //mirar que la table que nos dan no sea nula
+            if(table == null)
+            {
+                return false;
+            }
+            //comprobar que no existe ya en la lista
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == table.Name)
+                {
+                    //ya existe
+                    return false;
+                }
+            }
+            //añado a lista la table que me dan
+            Tables.Add(table);
+            return true;
             
         }
 
         public Table TableByName(string tableName)
         {
             //DEADLINE 1.B: Find and return the table with the given name
+
+            //recorrer la lista buscando que coincidan los nombres
+            for(int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    return Tables[i];
+                }
+            }
+
             
             return null;
             
