@@ -142,7 +142,6 @@ namespace DbManager
                 res = res + "{";
                 for (int j=0; j<r.Values.Count; j++)
                 {
-                    ColumnIndexByName(j);
                     res = res + "'" + r.Values[j] + "'";
                     if(j < r.Values.Count - 1)
                     {
