@@ -249,5 +249,78 @@ namespace OurTests
             tabla.DeleteIthRow(0);
             Assert.Equal(0, tabla.NumRows());
         }
+
+        [Fact]
+        public void TestDeleteWhere()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+
+            Row fila1 = new Row(columnas, new List<string>() { "Rodolfo", "1.62", "25" });
+            Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
+            Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
+
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+
+            //1. eliminar todas las filas
+            Condition condicion1= new Condition("Age", ">", "0");
+            tabla.DeleteWhere(condicion1);
+            Assert.Equal(0, tabla.NumRows());
+            //2. eliminar 0 filas
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+            Condition condicion2 = new Condition("Age", "=", "100");
+            tabla.DeleteWhere(condicion2);
+            Assert.Equal(3, tabla.NumRows());
+            //3. eliminar 1 fila
+            Condition condicion3 = new Condition("Age", "=", "67");
+            tabla.DeleteWhere(condicion3);
+            Assert.Equal(2, tabla.NumRows());
+            Assert.Equal("Rodolfo", tabla.GetRow(0).Values[0]);
+            Assert.Equal("Pepe", tabla.GetRow(1).Values[0]);
+        }
+
+        [Fact] 
+        public void TestInsert()
+        {
+            //1.valido
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+
+            Row fila1 = new Row(columnas, new List<string>() { "Rodolfo", "1.62", "25" });
+            Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
+            Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
+
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+
+            List<string> values = new List<string> { "María", "1.58", "22" };
+
+            bool res = tabla.Insert(values);
+            Assert.True(res);
+            Assert.Equal(4, tabla.NumRows());
+
+            //2. no valido faltan valores
+            List<string> values2= new List<string> { "Maria", "1.75" };
+            bool res2=tabla.Insert(values2);
+            Assert.False(res2);
+            Assert.Equal(4, tabla.NumRows());
+        }
     }
 }
