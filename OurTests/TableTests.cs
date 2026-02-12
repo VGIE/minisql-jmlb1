@@ -6,15 +6,8 @@ namespace OurTests
     public class TableTests
     {
         //TODO DEADLINE 1A : Create your own tests for Table
-        /*
-        [Fact]
-        public void Test1()
-        {
 
-        }
-        */
-
-
+        
         [Fact]
         public void TestGetRow()
         {
@@ -289,6 +282,82 @@ namespace OurTests
             Assert.Equal("Pepe", tabla.GetRow(1).Values[0]);
         }
 
+
+        [Fact]
+        public void TestSelect()
+        {
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+
+            Row fila1 = new Row(columnas, new List<string>() { "Diego", "1.62", "25" });
+            Row fila2 = new Row(columnas, new List<string>() { "Maider", "1.67", "67" });
+            Row fila3 = new Row(columnas, new List<string>() { "Pepe", "1.55", "51" });
+
+            tabla.AddRow(fila1);
+            tabla.AddRow(fila2);
+            tabla.AddRow(fila3);
+
+            //Diferentes casos de columnas para el testeo
+
+            List<string> columns = new List<string>() { "Name" };
+            List<string> columns2 = new List<string>() { "Name", "Height" };
+            List<string> columns3 = new List<string>() { "Name", "Height", "Age" };
+            List<string> collumns4 = new List<string>() { "Name", "Age" };
+            
+            //En el caso de no tener condicion, debe devolver las 3 personas
+
+
+            Table resultNull = tabla.Select(columns, null);
+
+            Assert.Equal(3, resultNull.NumRows());
+            Assert.Equal(1,resultNull.NumColumns());
+
+            
+            Table resultNull2 = tabla.Select(columns2, null);
+
+            Assert.Equal(3, resultNull2.NumRows()); 
+            Assert.Equal(2, resultNull2.NumColumns());
+            Assert.Equal("1.67", resultNull2.GetRow(1).GetValue("Height"));
+
+            //Diferentes condiciones
+
+            //Edad menor que 60
+            Condition conditionAge = new Condition("Age", "<", "60");
+            
+
+            Table resultAge = tabla.Select(columns3, conditionAge);
+
+            Assert.Equal(2 , resultAge.NumRows());
+            Assert.Equal(3, resultAge.NumColumns());
+            Assert.Equal("25", resultAge.GetRow(0).GetValue("Age"));
+            Assert.Equal("Pepe", resultAge.GetRow(1).GetValue("Name"));
+
+            //Nombre coincide
+            Condition conditionName = new Condition("Name", "=", "Diego");
+           
+            Table resultName = tabla.Select(collumns4, conditionName);
+
+            Assert.Equal(1, resultName.NumRows());
+            Assert.Equal(2, resultName.NumColumns());
+
+            //Mayor altura que 1.60
+            Condition conditionHeight = new Condition("Height", ">", "1.60");
+
+            Table resultHeight = tabla.Select(columns2, conditionHeight);
+
+            Assert.Equal(2, resultHeight.NumRows());
+            Assert.Equal(2, resultHeight.NumColumns());
+            Assert.Equal("Diego", resultHeight.GetRow(0).GetValue("Name"));
+            Assert.Equal("1.67", resultHeight.GetRow(1).GetValue("Height"));
+        }
+
+
         [Fact] 
         public void TestInsert()
         {
@@ -322,5 +391,7 @@ namespace OurTests
             Assert.False(res2);
             Assert.Equal(4, tabla.NumRows());
         }
+
+       
     }
 }
