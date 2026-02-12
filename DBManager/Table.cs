@@ -1,6 +1,7 @@
 using DbManager.Parser;
 using System;
 using System.Collections.Generic;
+using System.Windows.Markup;
 
 namespace DbManager
 {
@@ -180,7 +181,12 @@ namespace DbManager
         public void DeleteWhere(Condition condition)
         {
             //TODO DEADLINE 1.A: Delete all rows where the condition is true. Check RowIndicesWhereConditionIsTrue()
-            
+            List<int> indices = RowIndicesWhereConditionIsTrue(condition);
+            //orden descendente
+            for(int i = indices.Count - 1; i>=0; i--)
+            {
+                Rows.RemoveAt(indices[i]);
+            }
         }
 
         public Table Select(List<string> columnNames, Condition condition)
@@ -195,8 +201,16 @@ namespace DbManager
         public bool Insert(List<string> values)
         {
             //TODO DEADLINE 1.A: Insert a new row with the values given. If the number of values is not correct, return false. True otherwise
-            
-            return false;
+            if(values.Count != ColumnDefinitions.Count)
+            {
+                return false;
+            }
+            else
+            {
+                Row r = new Row(ColumnDefinitions, values);
+                Rows.Add(r);
+                return true;
+            }
             
         }
 
