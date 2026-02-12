@@ -142,8 +142,20 @@ namespace DbManager
         {
             //DEADLINE 1.B: Insert a new row to the table. If it doesn't exist return false and set LastErrorMessage appropriately
             //If everything goes ok, set LastErrorMessage with the appropriate success message (Check Constants.cs)
-            
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    //comprobar que el número de valores es igual que el numero de columnas
+                   // if(values.Count == Tables[i].Col)
+
+                }
+            }
+
+            //no hay ninguna tabla con ese nombre
+            LastErrorMessage = Constants.TableDoesNotExistError;
             return false;
+            
             
         }
 
