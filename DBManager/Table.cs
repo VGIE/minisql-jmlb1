@@ -188,8 +188,40 @@ namespace DbManager
             //TODO DEADLINE 1.A: Return a new table (with name 'Result') that contains the result of the select. The condition
             //may be null (if no condition, all rows should be returned). This is the most difficult method in this class
             
-            return null;
-            
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>(); 
+            foreach(string columnName in columnNames)
+            { 
+                ColumnDefinition c = ColumnByName(columnName);
+
+                if (c != null)
+                {
+
+                    columnas.Add(c);
+                }
+            }
+
+            Table result = new Table("Result", columnas); 
+
+            List<int> indices = RowIndicesWhereConditionIsTrue(condition);
+
+            foreach (int i in indices)
+            {
+                Row r = GetRow(i);
+
+                List<string> values = new List<string>();
+
+                foreach (string columnName in columnNames)
+
+                {
+                    int indiceColumna = ColumnIndexByName(columnName);
+                    values.Add(r.Values[indiceColumna]);
+                }
+
+                result.Insert(values);
+            } 
+
+            return result;
+
         }
 
         public bool Insert(List<string> values)
