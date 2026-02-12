@@ -122,14 +122,19 @@ namespace DbManager
         {
             //DEADLINE 1.B: Delete the table with the given name. If the table doesn't exist, return false and set LastErrorMessage
             //If everything goes ok, return true and set LastErrorMessage with the appropriate success message (Check Constants.cs)
+
             for(int i =0; i< Tables.Count; i++)
             {
                 if(Tables[i].Name == tableName)
                 {
                     Tables.Remove(Tables[i]);
+                    LastErrorMessage = Constants.DropTableSuccess;
+                    return true;
                 }
+                
             }
             
+            LastErrorMessage = Constants.TableDoesNotExistError;
             return false;
         }
 
