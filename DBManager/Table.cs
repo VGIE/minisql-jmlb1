@@ -52,7 +52,8 @@ namespace DbManager
             if (Rows == null)
             {
                 return 0;
-            }else 
+            }
+            else 
             {
                 return Rows.Count;
             }
