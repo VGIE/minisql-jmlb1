@@ -1,6 +1,7 @@
 using DbManager.Parser;
 using System;
 using System.Collections.Generic;
+using System.Windows.Markup;
 
 namespace DbManager
 {
@@ -51,7 +52,8 @@ namespace DbManager
             if (Rows == null)
             {
                 return 0;
-            }else 
+            }
+            else 
             {
                 return Rows.Count;
             }
@@ -180,23 +182,76 @@ namespace DbManager
         public void DeleteWhere(Condition condition)
         {
             //TODO DEADLINE 1.A: Delete all rows where the condition is true. Check RowIndicesWhereConditionIsTrue()
-            
+            List<int> indices = RowIndicesWhereConditionIsTrue(condition);
+            //orden descendente
+            for(int i = indices.Count - 1; i>=0; i--)
+            {
+                Rows.RemoveAt(indices[i]);
+            }
         }
 
         public Table Select(List<string> columnNames, Condition condition)
         {
             //TODO DEADLINE 1.A: Return a new table (with name 'Result') that contains the result of the select. The condition
             //may be null (if no condition, all rows should be returned). This is the most difficult method in this class
-            
-            return null;
-            
+
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>();
+            foreach (string columnName in columnNames)
+            {
+                ColumnDefinition c = ColumnByName(columnName);
+
+                if (c != null)
+                {
+
+                    columnas.Add(c);
+                }
+            }
+
+            Table result = new Table("Result", columnas);
+
+            // Si la condición es null, incluir todas las filas
+            List<int> indices = new List<int>();
+
+            if (condition == null)
+            {
+                for (int i = 0; i < NumRows(); i++)
+                    indices.Add(i);
+
+            }else{
+
+                indices = RowIndicesWhereConditionIsTrue(condition);
+            }
+
+            foreach (int i in indices)
+            {
+                Row r = GetRow(i);
+                List<string> values = new List<string>();
+
+                foreach (ColumnDefinition col in columnas)
+                {
+                    int indiceColumna = ColumnIndexByName(col.Name);
+                    values.Add(r.Values[indiceColumna]);
+                }
+
+                result.Insert(values);
+            }
+
+            return result;
         }
 
         public bool Insert(List<string> values)
         {
             //TODO DEADLINE 1.A: Insert a new row with the values given. If the number of values is not correct, return false. True otherwise
-            
-            return false;
+            if(values.Count != ColumnDefinitions.Count)
+            {
+                return false;
+            }
+            else
+            {
+                Row r = new Row(ColumnDefinitions, values);
+                Rows.Add(r);
+                return true;
+            }
             
         }
 
