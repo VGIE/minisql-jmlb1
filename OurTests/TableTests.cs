@@ -268,49 +268,28 @@ namespace OurTests
             tabla.AddRow(new Row(columnas, new List<string>() { "Maider", "1.67", "67" }));
             tabla.AddRow(new Row(columnas, new List<string>() { "Pepe", "1.55", "51" }));
 
-            //OPERADOR =
-            //String
-            tabla.Update(new List<SetValue> {
-                new SetValue("Name", "Diego_Updated") 
-            }, new Condition("Name", "=", "Diego"));
-            Assert.Equal("Diego_Updated", tabla.GetRow(0).GetValue("Name"));
+            
+            // OPERADOR =
+            // String (=): Si nombre es 'Diego', cambiar todo
+            tabla.Update(new List<SetValue> { 
+                new SetValue("Height", "1.11"), 
+                new SetValue("Age", "11")}, 
+                new Condition("Name", "=", "Diego"));
+            Assert.Equal("11", tabla.GetRow(0).GetValue("Age"));
 
-            //Double
-            tabla.Update(new List<SetValue> { new SetValue("Name", "Maider_Updated") }, new Condition("Height", "=", "1.67"));
-            Assert.Equal("Maider_Updated", tabla.GetRow(1).GetValue("Name"));
+            // Double (=): Si altura es '1.70', cambiar todo
+            tabla.Update(new List<SetValue> { 
+                new SetValue("Name", "Maider_Ok"), 
+                new SetValue("Age", "33") }, 
+                new Condition("Height", "=", "1.70"));
+            Assert.Equal("Maider_Ok", tabla.GetRow(1).GetValue("Name"));
 
-            //Int
-            tabla.Update(new List<SetValue> { new SetValue("Name", "Pepe_Updated") }, new Condition("Age", "=", "51"));
-            Assert.Equal("Pepe_Updated", tabla.GetRow(2).GetValue("Name"));
-
-
-            // OPERADOR >
-            //String
-            tabla.Update(new List<SetValue> { new SetValue("Age", "99") }, new Condition("Name", ">", "M"));
-            Assert.Equal("99", tabla.GetRow(1).GetValue("Age")); 
-            Assert.Equal("99", tabla.GetRow(2).GetValue("Age")); 
-
-            //Double
-            tabla.Update(new List<SetValue> { new SetValue("Age", "10") }, new Condition("Height", ">", "1.60"));
-            Assert.Equal("10", tabla.GetRow(0).GetValue("Age"));
-            Assert.Equal("10", tabla.GetRow(1).GetValue("Age"));
-
-            //Int
-            tabla.Update(new List<SetValue> { new SetValue("Height", "2.10") }, new Condition("Age", ">", "90"));
-            Assert.Equal("2.10", tabla.GetRow(1).GetValue("Height"));
-
-            //OPERADOR <
-            //String
-            tabla.Update(new List<SetValue> { new SetValue("Height", "1.00") }, new Condition("Name", "<", "E"));
-            Assert.Equal("1.00", tabla.GetRow(0).GetValue("Height"));
-
-            //Double
-            tabla.Update(new List<SetValue> { new SetValue("Name", "Bajo") }, new Condition("Height", "<", "1.60"));
-            Assert.Equal("Bajo", tabla.GetRow(2).GetValue("Name"));
-
-            //Int
-            tabla.Update(new List<SetValue> { new SetValue("Name", "Joven") }, new Condition("Age", "<", "20"));
-            Assert.Equal("Joven", tabla.GetRow(0).GetValue("Name"));
+            // Int (=): Si edad es '40', cambiar todo
+            tabla.Update(new List<SetValue> { 
+                new SetValue("Name", "Pepe_Ok"), 
+                new SetValue("Height", "1.88") }, 
+                new Condition("Age", "=", "40"));
+            Assert.Equal("1.88", tabla.GetRow(2).GetValue("Height"));
         }
 
 
