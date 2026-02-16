@@ -55,5 +55,87 @@ namespace OurTests
             Assert.Same(table2 , db.TableByName("songs"));
 
         }
+        [Fact]
+        public void TestCreateTable()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad")
+            };
+
+            //se crea 
+            Assert.True(db.CreateTable("users", columns));
+            Assert.Equal(Constants.CreateTableSuccess, db.LastErrorMessage);
+
+            //ya existe la tabla
+            Assert.False(db.CreateTable("users", columns));
+            Assert.Equal(Constants.TableAlreadyExistsError, db.LastErrorMessage);
+
+            //no nos dan columnas
+            Assert.False(db.CreateTable("animals", null));
+            Assert.Equal(Constants.DatabaseCreatedWithoutColumnsError, db.LastErrorMessage);
+
+        }
+        [Fact]
+        public void TestDropTable()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad")
+            };
+            Table table = new Table("users", columns);
+            db.AddTable(table);
+
+            Assert.True(db.DropTable("users"));
+            Assert.Equal(Constants.DropTableSuccess, db.LastErrorMessage);
+
+            Assert.False(db.DropTable("animals"));
+            Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+
+        }
+        [Fact]
+        public void TestInsert()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad")
+            };
+            Table table = new Table("users", columns);
+            db.AddTable(table);
+
+            //valores correctos 
+            List<string> valoresCorrectos = new List<string>() { "Lucas", "21" };
+            Assert.True(db.Insert("users", valoresCorrectos));
+            Assert.Equal(Constants.InsertSuccess, db.LastErrorMessage);
+
+            //demasidos valores
+            List<string> valoresDeMas = new List<string>() { "Lucas", "21", "amarillo" };
+            Assert.False(db.Insert("users", valoresDeMas));
+            Assert.Equal(Constants.ColumnCountsDontMatch, db.LastErrorMessage);
+
+            //pocos valores
+            List<string> valoresDeMenos = new List<string>() { "Lucas" };
+            Assert.False(db.Insert("users", valoresDeMenos));
+            Assert.Equal(Constants.ColumnCountsDontMatch, db.LastErrorMessage);
+
+            //no nos dan valores
+            List<string> valores = new List<string>();
+            Assert.False(db.Insert("users", valores));
+            Assert.Equal(Constants.ColumnCountsDontMatch, db.LastErrorMessage);
+
+            //comprobar que la tabla existe
+            List<string> valoresTablaNoExiste = new List<string>() { "Lucas", "21"};
+            Assert.False(db.Insert("animals", valoresTablaNoExiste));
+            Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+        }
     }
 }
