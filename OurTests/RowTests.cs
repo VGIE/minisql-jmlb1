@@ -6,7 +6,7 @@ namespace OurTests
     {
         //TODO DEADLINE 1A : Create your own tests for Row
 
-        [Fact]
+        
         //crear metodo para inicializar los rows
         private Row CreateTestRow()
         {
