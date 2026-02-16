@@ -147,7 +147,14 @@ namespace DbManager
                 if (Tables[i].Name == tableName)
                 {
                     //comprobar que el número de valores es igual que el numero de columnas
-                   // if(values.Count == Tables[i].Col)
+                   if(values.Count == Tables[i].NumColumns())
+                    {
+                        Tables[i].Insert(values);
+                        LastErrorMessage = Constants.InsertSuccess;
+                        return true;
+                    }
+                    LastErrorMessage = Constants.ColumnCountsDontMatch;
+                    return false;
 
                 }
             }
