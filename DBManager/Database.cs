@@ -13,6 +13,7 @@ namespace DbManager
     {
         private List<Table> Tables = new List<Table>();
         private string m_username;
+        private string m_password;
 
         public string LastErrorMessage { get; private set; }
 
@@ -26,20 +27,50 @@ namespace DbManager
         public Database(string adminUsername, string adminPassword)
         {
             //DEADLINE 1.B: Initalize the member variables
+            m_username = adminUsername;
+
+            m_password = adminPassword;
+
             
         }
 
         public bool AddTable(Table table)
         {
             //DEADLINE 1.B: Add a new table to the database
-            
-            return false;
+
+            //mirar que la table que nos dan no sea nula
+            if(table == null)
+            {
+                return false;
+            }
+            //comprobar que no existe ya en la lista
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == table.Name)
+                {
+                    //ya existe
+                    return false;
+                }
+            }
+            //añado a lista la table que me dan
+            Tables.Add(table);
+            return true;
             
         }
 
         public Table TableByName(string tableName)
         {
             //DEADLINE 1.B: Find and return the table with the given name
+
+            //recorrer la lista buscando que coincidan los nombres
+            for(int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    return Tables[i];
+                }
+            }
+
             
             return null;
             
@@ -51,8 +82,39 @@ namespace DbManager
             //return false and set LastErrorMessage with the appropriate error (Check Constants.cs)
             //Do the same if no column is provided
             //If everything goes ok, set LastErrorMessage with the appropriate success message (Check Constants.cs)
+
+            //mirar si ya existe una tabla con ese nombre
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    LastErrorMessage = Constants.TableAlreadyExistsError;
+                    return false;
+                    
+                }
+            }
+
+            //comprobar que nos de la columna
+      
+            if(ColumnDefinition == null)
+            {
+                LastErrorMessage = Constants.DatabaseCreatedWithoutColumnsError;
+                return false;
             
-            return false;
+            }
+            //comprobar que no este vacía
+            else if(ColumnDefinition.Count == 0)
+            {
+                LastErrorMessage = Constants.DatabaseCreatedWithoutColumnsError;
+                return false;
+                
+            }
+
+
+            Table nuevaTabla = new Table(tableName, ColumnDefinition);
+            Tables.Add(nuevaTabla);
+            LastErrorMessage = Constants.CreateTableSuccess;
+            return true;
             
         }
 
@@ -60,7 +122,19 @@ namespace DbManager
         {
             //DEADLINE 1.B: Delete the table with the given name. If the table doesn't exist, return false and set LastErrorMessage
             //If everything goes ok, return true and set LastErrorMessage with the appropriate success message (Check Constants.cs)
+
+            for(int i =0; i< Tables.Count; i++)
+            {
+                if(Tables[i].Name == tableName)
+                {
+                    Tables.Remove(Tables[i]);
+                    LastErrorMessage = Constants.DropTableSuccess;
+                    return true;
+                }
+                
+            }
             
+            LastErrorMessage = Constants.TableDoesNotExistError;
             return false;
         }
 
@@ -68,8 +142,27 @@ namespace DbManager
         {
             //DEADLINE 1.B: Insert a new row to the table. If it doesn't exist return false and set LastErrorMessage appropriately
             //If everything goes ok, set LastErrorMessage with the appropriate success message (Check Constants.cs)
-            
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    //comprobar que el número de valores es igual que el numero de columnas
+                   if(values.Count == Tables[i].NumColumns())
+                    {
+                        Tables[i].Insert(values);
+                        LastErrorMessage = Constants.InsertSuccess;
+                        return true;
+                    }
+                    LastErrorMessage = Constants.ColumnCountsDontMatch;
+                    return false;
+
+                }
+            }
+
+            //no hay ninguna tabla con ese nombre
+            LastErrorMessage = Constants.TableDoesNotExistError;
             return false;
+            
             
         }
 
