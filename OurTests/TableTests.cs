@@ -1,4 +1,5 @@
 using DbManager;
+using DbManager.Parser;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OurTests
@@ -393,5 +394,88 @@ namespace OurTests
         }
 
        
+
+
+        [Fact]
+        public void TestUpdate()
+        {
+
+            List<ColumnDefinition> columnas = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Age")
+            };
+
+            Table tabla = new Table("TestTable", columnas);
+            tabla.AddRow(new Row(columnas, new List<string>() { "Diego", "1.62", "25" }));
+            tabla.AddRow(new Row(columnas, new List<string>() { "Maider", "1.67", "67" }));
+            tabla.AddRow(new Row(columnas, new List<string>() { "Juan", "1.55", "51" }));
+
+
+            //OPERADOR =
+            //String (=):
+            tabla.Update(new List<SetValue> {
+                new SetValue("Height", "1.11"),
+                new SetValue("Age", "11")},
+                new Condition("Name", "=", "Diego"));
+            Assert.Equal("11", tabla.GetRow(0).GetValue("Age"));
+
+            //Double (=)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Name", "Maider_Ok"),
+                new SetValue("Age", "33") },
+                new Condition("Height", "=", "1.67"));
+            Assert.Equal("Maider_Ok", tabla.GetRow(1).GetValue("Name"));
+
+            // Int (=)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Name", "Juan_Ok"),
+                new SetValue("Height", "1.88") },
+                new Condition("Age", "=", "51"));
+            Assert.Equal("1.88", tabla.GetRow(2).GetValue("Height"));
+
+            //OPERADOR > 
+            //String (>)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Age", "80")}, 
+                new Condition("Name", ">", "B"));
+            Assert.Equal("80", tabla.GetRow(2).GetValue("Age"));
+
+            //Double (>)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Name", "Juan_Mayor")},
+                new Condition("Height", ">", "1.80"));
+            Assert.Equal("Juan_Mayor", tabla.GetRow(2).GetValue("Name"));
+
+            //Int (>)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Height", "2.00")}, 
+                new Condition("Age", ">", "30"));
+            Assert.Equal("2.00", tabla.GetRow(1).GetValue("Height"));
+
+
+            //OPERADOR <
+            //String (<)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Height", "1.00")}, 
+                new Condition("Name", "<", "E"));
+            Assert.Equal("1.00", tabla.GetRow(0).GetValue("Height"));
+
+            //Double (<)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Age", "5")}, 
+                new Condition("Height", "<", "1.20"));
+            Assert.Equal("5", tabla.GetRow(0).GetValue("Age"));
+
+            //Int (<)
+            tabla.Update(new List<SetValue> {
+                new SetValue("Name", "Diego_Pequeño")}, 
+                new Condition("Age", "<", "10"));
+            Assert.Equal("Diego_Pequeño", tabla.GetRow(0).GetValue("Name"));
+        }
+
+
     }
+    
 }

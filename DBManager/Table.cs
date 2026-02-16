@@ -217,7 +217,9 @@ namespace DbManager
                 for (int i = 0; i < NumRows(); i++)
                     indices.Add(i);
 
-            }else{
+            }
+            else
+            {
 
                 indices = RowIndicesWhereConditionIsTrue(condition);
             }
@@ -260,7 +262,11 @@ namespace DbManager
             //TODO DEADLINE 1.A: Update all the rows where the condition is true using all the SetValues (ColumnName-Value). If condition is null,
             //return false, otherwise return true
 
-            //listaCondiciones = [0,3,5]
+            if(condition == null)
+            {
+                return false;
+            }
+
             List<int> listaCondiciones = RowIndicesWhereConditionIsTrue (condition);
 
             for(int i = 0; i < listaCondiciones.Count; i++)

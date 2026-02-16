@@ -58,12 +58,12 @@ namespace DbManager
             {
                 if (ColumnDefinitions[i].Name.Equals(condition.ColumnName))
                 {
-                    
-                    return condition.IsTrue(Values[i] , ColumnDefinitions[i].Type);
+
+                    return condition.IsTrue(Values[i], ColumnDefinitions[i].Type);
                 }
 
             }
-           return false;
+            return false;
         }
             
         
