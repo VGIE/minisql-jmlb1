@@ -217,7 +217,8 @@ namespace DbManager
                 for (int i = 0; i < NumRows(); i++)
                     indices.Add(i);
 
-            }else
+            }
+            else
             {
 
                 indices = RowIndicesWhereConditionIsTrue(condition);
