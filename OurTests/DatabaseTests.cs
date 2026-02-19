@@ -1,8 +1,9 @@
 using DbManager;
+using DbManager.Parser;
 
 namespace OurTests
 {
-    public class UnitTest1
+    public class DatabaseTest
     {
         //TODO DEADLINE 1B : Create your own tests for Database
         
@@ -136,6 +137,54 @@ namespace OurTests
             List<string> valoresTablaNoExiste = new List<string>() { "Lucas", "21"};
             Assert.False(db.Insert("animals", valoresTablaNoExiste));
             Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+        }
+
+
+        //UPDATE
+        [Fact]
+        public void Update_TableNotExist()
+        {
+            Database db = new Database("admin", "password");
+            var updates = new List<SetValue> { new SetValue("Age", "30") };
+            var condition = new Condition("Age", "=", "25");
+
+            bool result = db.Update("NoExiste", updates, condition);
+
+            Assert.False(result);
+            Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+        }
+
+        //Doesn´t exist the column
+        [Fact]
+        public void Update_ColumnNotExist()
+        {
+            Database db = new Database("admin", "password");
+            Table tabla = Table.CreateTestTable();
+            db.AddTable(tabla);
+
+            var updates = new List<SetValue> { new SetValue("NoColumn", "30") };
+            var condition = new Condition("Age", "=", "25");
+
+            bool result = db.Update(tabla.Name, updates, condition);
+
+            Assert.False(result);
+            Assert.Equal(Constants.ColumnDoesNotExistError, db.LastErrorMessage);
+        }
+
+        //All checked (with condition)
+        [Fact]
+        public void Update_WithCondition()
+        {
+            Database db = new Database("admin", "password");
+            Table tabla = Table.CreateTestTable();
+            db.AddTable(tabla);
+            // Supongamos que hay una fila con Age 70
+            var updates = new List<SetValue> { new SetValue("Age", "100") };
+            var condition = new Condition("Age", ">", "60");
+
+            bool result = db.Update(tabla.Name, updates, condition);
+
+            Assert.True(result);
         }
     }
 }

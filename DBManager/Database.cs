@@ -191,13 +191,65 @@ namespace DbManager
             //DEADLINE 1.B: Update in the given table all the rows where the condition is true using the SetValues
             //If the table or the column in the condition don't exist, return null and set LastErrorMessage (Check Constants.cs)
             //If everything goes ok, return true
-            
-            return false;
-            
+
+            Table table = null;
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                if (Tables[i].Name == tableName)
+                {
+                    table = Tables[i];
+                    break; //Table found
+                }
+            }
+            //Table doesn´t exist
+            if (table == null)
+            {
+                LastErrorMessage = Constants.TableDoesNotExistError;
+                return false;
+            }
+
+            //Condition exist in that column?
+            int columnIndex = table.ColumnIndexByName(columnCondition.ColumnName);
+            if (columnIndex == -1)
+            {
+                LastErrorMessage = Constants.ColumnDoesNotExistError;
+                return false;
+            }
+            var colName = table.ColumnByName(columnCondition.ColumnName).Type;
+
+            //Column exist?
+            for (int j = 0; j < columnNames.Count; j++)
+            {
+                if (table.ColumnIndexByName(columnNames[j].ColumnName) == -1)
+                {
+                    LastErrorMessage = Constants.ColumnDoesNotExistError;
+                    return false;
+                }
+            }
+
+            //Condition and column exist
+            for (int i = 0; i < table.NumRows(); i++)
+            {
+                Row row = table.GetRow(i);
+
+                if (columnCondition.IsTrue(row.Values[columnIndex], colName))
+                {
+                    //condition check, update
+                    for (int j = 0; j < columnNames.Count; j++)
+                    {
+                        int columnIndex1 = table.ColumnIndexByName(columnNames[j].ColumnName);
+                        row.Values[columnIndex1] = columnNames[j].Value;
+                    }
+                }
+            }
+            LastErrorMessage = Constants.UpdateSuccess;
+            return true;
         }
 
-        
-        
+
+
+
+
 
         
         public bool Save(string databaseName)
