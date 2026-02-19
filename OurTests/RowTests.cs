@@ -21,9 +21,16 @@ namespace OurTests
             {
                 "Jacinto", "37", "7.8"
             };
+            List<String> rowValues1 = new List<String>()
+            {
+                "Joseba"
+            };
 
             Row testRow = new Row(columns, rowValues);
+            Row testRow1 = new Row(columns, rowValues1);
+
             return testRow;
+            return testRow1;
         }
 
         [Fact]
@@ -32,6 +39,7 @@ namespace OurTests
             //mirara que pase por todos los if para conseguir toda la cobertura
 
             Row testRow = CreateTestRow();
+            Row testRow1 = CreateTestRow();
 
             Assert.Equal("Jacinto", testRow.GetValue("Name"));
             Assert.Equal("37", testRow.GetValue("Age"));
@@ -42,6 +50,8 @@ namespace OurTests
             Assert.Equal("Maider", testRow.GetValue("Name"));
             Assert.Equal("37", testRow.GetValue("Age"));
             Assert.Equal("7.8", testRow.GetValue("Grades"));
+
+            
         }
 
         [Fact]
