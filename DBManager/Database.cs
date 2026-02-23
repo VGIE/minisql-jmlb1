@@ -221,18 +221,68 @@ namespace DbManager
             //DEADLINE 1.C: Save this database to disk with the given name
             //If everything goes ok, return true, false otherwise.
             //DEADLINE 5: Save the SecurityManager so that it can be loaded with the database in Load()
-            
-            return false;
-            
+            try
+            {
+                string filename = databaseName + ".db";
+                using (StreamWriter w = new StreamWriter(filename))
+                {
+                    w.WriteLine(m_username);
+                    w.WriteLine(m_password);
+                    w.WriteLine(Tables.Count);
+
+                    //guardo cada tabla
+                    foreach(Table table in Tables)
+                    {
+                        //info tabla
+                        w.WriteLine(table.Name);
+                        w.WriteLine(table.NumColumns());
+                        w.WriteLine(table.NumRows());
+
+                        //columnas
+                        for(int i = 0; i < table.NumColumns(); i++)
+                        {
+                            ColumnDefinition column = table.GetColumn(i);
+                            w.WriteLine(column.ToString());
+                        }
+
+                        //filas
+                        for (int j = 0; j < table.NumRows() ; j++)
+                        {
+                            Row r = table.GetRow(j);
+                            string row = "";
+
+                            for(int x = 0; x<r.Values.Count; x++)
+                            {
+                                string v = r.Values[x];
+                                //separadores
+                                if (v.Contains(",") || v.Contains("\""))
+                                {
+                                    v = "\"" + v.Replace("\"", "\"\"") + "\"";
+                                }
+
+                                row += v;
+
+                                //comas entre valores menos el ultimo
+                                if (x < r.Values.Count - 1)
+                                {
+                                    row += ",";
+                                }
+                            }
+                            w.WriteLine(row);
+                        }
+                    }
+                }
+                return true;
+            }
+            catch 
+            {
+                return false;
+            }
+
         }
 
         public static Database Load(string databaseName, string username, string password)
         {
-            //DEADLINE 1.C: Load the (previously saved) database of name databaseName
-            //If everything goes ok, return the loaded database (a new instance), null otherwise.
-            //DEADLINE 5: When the Database object is created, set the username (create a new method if you must)
-            //After loading the database, load the SecurityManager and check the password is correct. If it's not, return null. If it is return the database
-            
             return null;
         }
 
