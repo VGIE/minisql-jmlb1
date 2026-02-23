@@ -43,7 +43,7 @@ namespace DbManager
         {
             //TODO DEADLINE 1.C: Return the column as a string with the name and the type separated by the delimiter
             
-            return null;
+            return Type.ToString() + Delimiter + Name;
             
         }
 
