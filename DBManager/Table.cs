@@ -203,7 +203,7 @@ namespace DbManager
                 if (c != null)
                 {
 
-                    columnas.Add(c);
+                    columnas.Add(new ColumnDefinition(c.Type, c.Name));
                 }
             }
 
@@ -229,9 +229,9 @@ namespace DbManager
                 Row r = GetRow(i);
                 List<string> values = new List<string>();
 
-                foreach (ColumnDefinition col in columnas)
+                foreach (string columnName in columnNames)
                 {
-                    int indiceColumna = ColumnIndexByName(col.Name);
+                    int indiceColumna = ColumnIndexByName(columnName);
                     values.Add(r.Values[indiceColumna]);
                 }
 

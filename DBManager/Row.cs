@@ -18,7 +18,13 @@ namespace DbManager
         {
             //TODO DEADLINE 1.A: Initialize member variables
             this.ColumnDefinitions = columnDefinitions;
-            this.Values = values;        
+            this.Values = values;
+
+            //Si esta vacio o tiene menos valores que Nº columnas
+            while (Values.Count < ColumnDefinitions.Count)
+            {
+                Values.Add(null);
+            }
         }
 
         public void SetValue(string columnName, string value)
@@ -30,6 +36,7 @@ namespace DbManager
                 {
                     Values[i] = value;
                 }
+                
             }
         }
 
