@@ -138,6 +138,66 @@ namespace OurTests
             Assert.False(db.Insert("animals", valoresTablaNoExiste));
             Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
         }
+        [Fact]
+        public void TestSelect()
+        {
+            Database db = new Database("admin", "adminPassword");
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            Table table = new Table("TableTest", columns);
+
+            List<String> values1 = new List<String>() { "Rodolfo", "1.62", "25" };
+            List<String> values2 = new List<String>() { "Maider", "1.67", "67" };
+            List<String> values3 = new List<String>() { "Pepe", "1.55", "51" };
+            List<String> values4 = new List<String>() { "Maria", "1.58", "22" };
+            List<String> values5 = new List<String>() { "Leire", "1.70", "21" };
+            List<String> values6 = new List<String>() { "Bea", "1.65", "21" };
+
+            table.AddRow(new Row(columns, values1));
+            table.AddRow(new Row(columns, values2));
+            table.AddRow(new Row(columns, values3));
+            table.AddRow(new Row(columns, values4));
+            table.AddRow(new Row(columns, values5));
+            table.AddRow(new Row(columns, values6));
+
+            db.AddTable(table);
+
+            //1.condicion bien
+            Condition condition1 = new Condition("Age", ">", "30");
+            List<string> columnNames = new List<string> { "Name", "Age", "Height" };
+            Table result1 = db.Select("TableTest", columnNames, condition1);
+            Assert.NotNull(result1);
+            Assert.Equal(2, result1.NumRows()); 
+            Assert.Equal(3, result1.NumColumns());
+
+            //2.select sin condicion, devuelva todas
+            Table result2 = db.Select("TableTest", columnNames, null);
+            Assert.NotNull(result2);
+            Assert.Equal(6, result2.NumRows());
+            Assert.Equal(3, result2.NumColumns());
+
+            //3.tabla no existe
+            Table result3 = db.Select("noexiste", columnNames, null);
+            Assert.Null(result3);
+            Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+
+            //4.columna que no existe
+            Table result4 = db.Select("TableTest", new List<string> {"Surname"}, null);
+            Assert.Null(result4);
+            Assert.Equal(Constants.ColumnDoesNotExistError, db.LastErrorMessage);
+
+            //5.condicion que no devuelve nada
+            Condition condition2 = new Condition("Name", "=", "Jorge");
+            Table result5 = db.Select("TableTest", columnNames, condition2);
+            Assert.NotNull(result5);
+            Assert.Equal(0, result5.NumRows());
+            Assert.Equal(3, result5.NumColumns());
+        }
 
 
         //UPDATE
