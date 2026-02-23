@@ -215,58 +215,17 @@ namespace DbManager
                 return false;
             }
 
-            //Columns exist?
-            if (columnCondition != null && table.ColumnIndexByName(columnCondition.ColumnName) == -1)
+            //Column in the condition exist?
+            if (columnCondition != null)
             {
-                LastErrorMessage = Constants.ColumnDoesNotExistError;
-                return false;
-            }
-
-            foreach (var setVal in columnNames)
-            {
-                if (table.ColumnIndexByName(setVal.ColumnName) == -1)
+                if (table.ColumnIndexByName(columnCondition.ColumnName) == -1)
                 {
                     LastErrorMessage = Constants.ColumnDoesNotExistError;
                     return false;
                 }
             }
 
-            bool updated = false;
-
-            for (int i = 0; i < table.NumRows(); i++)
-            {
-                Row row = table.GetRow(i);
-
-                bool matches = false;
-                if (columnCondition == null)
-                {
-                    matches = true;
-                }
-                else
-                {
-                    int idx = table.ColumnIndexByName(columnCondition.ColumnName);
-                    var type = table.ColumnByName(columnCondition.ColumnName).Type;
-                    matches = columnCondition.IsTrue(row.Values[idx], type);
-                }
-
-                if (matches)
-                {
-                    foreach (var setVal in columnNames)
-                    {
-                        int colIdx = table.ColumnIndexByName(setVal.ColumnName);
-                        row.Values[colIdx] = setVal.Value;
-                    }
-                    updated = true;
-                }
-            }
-
-            if (updated == false)
-            {
-                LastErrorMessage = Constants.Error;
-                return false;
-            }
-
-            LastErrorMessage = Constants.UpdateSuccess;
+            table.Update(columnNames, columnCondition);
             return true;
         }
 

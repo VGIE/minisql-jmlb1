@@ -84,9 +84,14 @@ namespace DbManager
             //TODO DEADLINE 1.C: Encode the delimiter in value
             //Guardar el nombre y codificar (teniendo en cuenta el delimintador)
 
-            
-            return null;
-            
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            else
+            {
+                return value.Replace(Delimiter, DelimiterEncoded);
+            }
         }
 
         private static string Decode(string value)
@@ -101,9 +106,20 @@ namespace DbManager
         {
             //TODO DEADLINE 1.C: Return the row as string with all values separated by the delimiter
             //de ColumnDefinition a text
-            
-            return null;
-            
+
+            String result = "";
+
+            for (int i = 0; i < Values.Count; i++)
+            {
+                if (i > 0)
+                {
+                    result += ",";
+                }
+                result += Encode(Values[i]);
+            }
+            return result;
+
+
         }
 
         public static Row Parse(List<ColumnDefinition> columns, string value)
