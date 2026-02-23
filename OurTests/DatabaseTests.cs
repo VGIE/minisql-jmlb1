@@ -208,13 +208,12 @@ namespace OurTests
             var updates = new List<SetValue> { new SetValue("Age", "30") };
             var condition = new Condition("Age", "=", "25");
 
-            bool result = db.Update("NoExiste", updates, condition);
+            bool result = db.Update("NoExist", updates, condition);
 
             Assert.False(result);
             Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
         }
 
-        //Doesn´t exist the column
         [Fact]
         public void Update_ColumnNotExist()
         {
@@ -231,20 +230,56 @@ namespace OurTests
             Assert.Equal(Constants.ColumnDoesNotExistError, db.LastErrorMessage);
         }
 
-        //All checked (with condition)
         [Fact]
         public void Update_WithCondition()
         {
             Database db = new Database("admin", "password");
             Table tabla = Table.CreateTestTable();
             db.AddTable(tabla);
-            // Supongamos que hay una fila con Age 70
             var updates = new List<SetValue> { new SetValue("Age", "100") };
             var condition = new Condition("Age", ">", "60");
 
             bool result = db.Update(tabla.Name, updates, condition);
 
             Assert.True(result);
+            Assert.Equal(Constants.UpdateSuccess, db.LastErrorMessage);
+        }
+
+        [Fact]
+        public void Update_NoRowsMatchCondition()
+        {
+            //impossible age > 500
+
+            Database db = new Database("admin", "password");
+            Table tabla = Table.CreateTestTable();
+            db.AddTable(tabla);
+
+            var updates = new List<SetValue> { new SetValue("Age", "50") };
+            var condition = new Condition("Age", ">", "500");
+
+            bool result = db.Update(tabla.Name, updates, condition);
+
+            Assert.False(result);
+            Assert.Equal(Constants.Error, db.LastErrorMessage);
+        }
+
+        [Fact]
+        public void Update_NoCondition()
+        {
+            Database db = new Database("admin", "password");
+            Table tabla = Table.CreateTestTable();
+            db.AddTable(tabla);
+
+            var updates = new List<SetValue> { new SetValue("Age", "10") };
+
+            //Condition is null, update all rows
+            bool result = db.Update(tabla.Name, updates, null);
+
+            Assert.True(result);
+            Assert.Equal(Constants.UpdateSuccess, db.LastErrorMessage);
+
+            //Testing 1º row --> age = 10
+            Assert.Equal("10", tabla.GetRow(0).Values[tabla.ColumnIndexByName("Age")]);
         }
     }
 }

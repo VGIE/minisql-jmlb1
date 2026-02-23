@@ -208,56 +208,64 @@ namespace DbManager
             //If the table or the column in the condition don't exist, return null and set LastErrorMessage (Check Constants.cs)
             //If everything goes ok, return true
 
-            Table table = null;
-            for (int i = 0; i < Tables.Count; i++)
-            {
-                if (Tables[i].Name == tableName)
-                {
-                    table = Tables[i];
-                    break; //Table found
-                }
-            }
-            //Table doesn´t exist
+            Table table = TableByName(tableName);
             if (table == null)
             {
                 LastErrorMessage = Constants.TableDoesNotExistError;
                 return false;
             }
 
-            //Condition exist in that column?
-            int columnIndex = table.ColumnIndexByName(columnCondition.ColumnName);
-            if (columnIndex == -1)
+            //Columns exist?
+            if (columnCondition != null && table.ColumnIndexByName(columnCondition.ColumnName) == -1)
             {
                 LastErrorMessage = Constants.ColumnDoesNotExistError;
                 return false;
             }
-            var colName = table.ColumnByName(columnCondition.ColumnName).Type;
 
-            //Column exist?
-            for (int j = 0; j < columnNames.Count; j++)
+            foreach (var setVal in columnNames)
             {
-                if (table.ColumnIndexByName(columnNames[j].ColumnName) == -1)
+                if (table.ColumnIndexByName(setVal.ColumnName) == -1)
                 {
                     LastErrorMessage = Constants.ColumnDoesNotExistError;
                     return false;
                 }
             }
 
-            //Condition and column exist
+            bool updated = false;
+
             for (int i = 0; i < table.NumRows(); i++)
             {
                 Row row = table.GetRow(i);
 
-                if (columnCondition.IsTrue(row.Values[columnIndex], colName))
+                bool matches = false;
+                if (columnCondition == null)
                 {
-                    //condition check, update
-                    for (int j = 0; j < columnNames.Count; j++)
+                    matches = true;
+                }
+                else
+                {
+                    int idx = table.ColumnIndexByName(columnCondition.ColumnName);
+                    var type = table.ColumnByName(columnCondition.ColumnName).Type;
+                    matches = columnCondition.IsTrue(row.Values[idx], type);
+                }
+
+                if (matches)
+                {
+                    foreach (var setVal in columnNames)
                     {
-                        int columnIndex1 = table.ColumnIndexByName(columnNames[j].ColumnName);
-                        row.Values[columnIndex1] = columnNames[j].Value;
+                        int colIdx = table.ColumnIndexByName(setVal.ColumnName);
+                        row.Values[colIdx] = setVal.Value;
                     }
+                    updated = true;
                 }
             }
+
+            if (updated == false)
+            {
+                LastErrorMessage = Constants.Error;
+                return false;
+            }
+
             LastErrorMessage = Constants.UpdateSuccess;
             return true;
         }
