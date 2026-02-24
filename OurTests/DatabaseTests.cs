@@ -220,7 +220,6 @@ namespace OurTests
         {
             Database db = new Database("admin", "password");
             Table tabla = Table.CreateTestTable();
-            db.AddTable(tabla);
 
             var updates = new List<SetValue> { new SetValue("Age", "30") };
             var condition = new Condition("NoExists", "=", "25");
@@ -231,21 +230,31 @@ namespace OurTests
         }
 
         [Fact]
-        public void Update_ReturnsTrue_Fixed()
+        public void TestUpdate()
         {
-            // Arrange
-            Database db = new Database("admin", "adminPassword");
-            Table tabla = Table.CreateTestTable(); 
+            Database db = new Database("admin", "password");
+            Table tabla = Table.CreateTestTable();
             db.AddTable(tabla);
 
-            string nombreColumna = "Age";
+            List<SetValue> changes = new List<SetValue> {
+                new SetValue("Age", "99")  
+            };
 
-            List<SetValue> updates = new List<SetValue> { new SetValue(nombreColumna, "100") };
-            Condition condition = new Condition(nombreColumna, ">", "10");
+            // Condición: actualizar donde Name sea igual al nombre de la primera fila
+            string nombre1Fila = tabla.GetRow(0).GetValue("Name");
+            Condition cond = new Condition("Name", "=", nombre1Fila);
 
-            bool result = db.Update(tabla.Name, updates, condition);
+            string ageOriginalFila1 = tabla.GetRow(1).GetValue("Age");
+
+            bool result = db.Update(tabla.Name, changes, cond);
 
             Assert.True(result);
+
+            // Verificar que la primera fila (la que cumple la condición) se actualizó a "99"
+            Assert.Equal("99", tabla.GetRow(0).GetValue("Age"));
+
+            // Verificar que la segunda fila (la que NO cumple la condición) NO se modificó
+            Assert.Equal(ageOriginalFila1, tabla.GetRow(1).GetValue("Age"));
         }
     }
 }
