@@ -164,6 +164,47 @@ namespace OurTests
             string result = row.AsText();
             Assert.Equal(",", result);
         }
+        [Fact]
+        public void ParseTest()
+        {
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Age"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height"),
+            };
+
+
+            string result1 = "Rodolfo:25:1.62";
+            string result2 = "Jacinto:30:1.78";
+
+            Row row1 = Row.Parse(columns, result1);
+            Row row2 = Row.Parse(columns, result2);
+
+            //Valores vacíos
+            Row emptyRow = Row.Parse(columns, "");
+            Assert.Null(emptyRow);
+
+            //Valor nulo
+            Row nullRow = Row.Parse(columns, null);
+            Assert.Null(nullRow);
+
+            //Columnas nulas (una lista vacía)
+            Row emptyColumn = Row.Parse(new List<ColumnDefinition>(), result1);
+            Assert.Null(emptyColumn);
+
+
+            //Columnas con datos
+            Assert.NotNull(row1);
+            Assert.NotNull(row2);
+
+            Assert.Equal("Rodolfo", row1.GetValue("Name"));
+            Assert.Equal("25", row1.GetValue("Age"));
+            Assert.Equal("1.78", row2.GetValue("Height"));
+
+            
+            
+        }
 
     }
 }

@@ -36,7 +36,7 @@ namespace DbManager
                 {
                     Values[i] = value;
                 }
-                
+
             }
         }
 
@@ -50,10 +50,10 @@ namespace DbManager
                 if (ColumnDefinitions[i].Name == columnName)
                 {
                     resultado = Values[i];
-                   return resultado;
+                    return resultado;
                 }
-            } 
-           return resultado;
+            }
+            return resultado;
         }
 
         public bool IsTrue(Condition condition)
@@ -72,8 +72,8 @@ namespace DbManager
             }
             return false;
         }
-            
-        
+
+
 
         private const string Delimiter = ":";
         private const string DelimiterEncoded = "[SEPARATOR]";
@@ -97,9 +97,16 @@ namespace DbManager
         private static string Decode(string value)
         {
             //TODO DEADLINE 1.C: Decode the value doing the opposite of Encode()
-            
-            return null;
-            
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            else
+            {
+                return value.Replace(DelimiterEncoded, Delimiter);
+
+            }
         }
 
         public string AsText()
@@ -126,9 +133,22 @@ namespace DbManager
         {
             //TODO DEADLINE 1.C: Parse a rowReturn the row as string with all values separated by the delimiter
             //de text a ColumnDefinition
-            
-            return null;
-            
+
+            if (string.IsNullOrEmpty(value) || columns.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                string[] values = value.Split(Delimiter);
+                Row r = new Row(columns, values.ToList());
+
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    r.SetValue(columns[i].Name, Decode(values[i]));
+                }
+                return r;
+            }
         }
     }
 }
