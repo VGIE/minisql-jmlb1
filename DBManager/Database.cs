@@ -230,11 +230,6 @@ namespace DbManager
         }
 
 
-
-
-
-
- 
         public bool Save(string databaseName)
         {
             //DEADLINE 1.C: Save this database to disk with the given name
@@ -261,33 +256,14 @@ namespace DbManager
                         for(int i = 0; i < table.NumColumns(); i++)
                         {
                             ColumnDefinition column = table.GetColumn(i);
-                            w.WriteLine(column.ToString());
+                            w.WriteLine(column.AsText());
                         }
 
                         //filas
                         for (int j = 0; j < table.NumRows() ; j++)
                         {
                             Row r = table.GetRow(j);
-                            string row = "";
-
-                            for(int x = 0; x<r.Values.Count; x++)
-                            {
-                                string v = r.Values[x];
-                                //separadores
-                                if (v.Contains(",") || v.Contains("\""))
-                                {
-                                    v = "\"" + v.Replace("\"", "\"\"") + "\"";
-                                }
-
-                                row += v;
-
-                                //comas entre valores menos el ultimo
-                                if (x < r.Values.Count - 1)
-                                {
-                                    row += ",";
-                                }
-                            }
-                            w.WriteLine(row);
+                            w.WriteLine(r.AsText());
                         }
                     }
                 }
