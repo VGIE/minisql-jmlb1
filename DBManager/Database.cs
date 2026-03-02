@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -278,7 +279,60 @@ namespace DbManager
 
         public static Database Load(string databaseName, string username, string password)
         {
-            return null;
+            try
+            {
+                string filename = databaseName + ".db";
+                if (filename == null)
+                {
+                    return null;
+                }
+                using (StreamReader reader = new StreamReader(filename))
+                {
+                    string fileUser = reader.ReadLine();
+                    string filePass = reader.ReadLine();
+
+                    if(fileUser != username && filePass != password)
+                    {
+                        return null;
+                    }
+
+                    Database newdb = new Database();
+                    newdb.m_username = fileUser;
+                    newdb.m_password = filePass;
+
+                    int numTablas = int.Parse(reader.ReadLine());
+
+                    for(int t=0; t < numTablas; t++)
+                    {
+                        string tableName = reader.ReadLine();
+                        int numColumns = int.Parse(reader.ReadLine());
+                        int numRows = int.Parse(reader.ReadLine());
+
+                        //reconstruir columnas
+                        List<ColumnDefinition> columns = new List<ColumnDefinition>();
+                        for (int c = 0; c < numColumns; c++)
+                        {
+                            string colText = reader.ReadLine();
+                            columns.Add(ColumnDefinition.Parse(colText));
+                        }
+                        Table newTable = new Table(tableName, columns);
+                        //reconstruir filas
+                        for (int r = 0; r < numRows; r++)
+                        {
+                            string row = reader.ReadLine();
+                            Row newRow = Row.Parse(columns, row);
+                            newTable.Insert(newRow.Values);
+                        }
+                        //añadimos la tabla a la bd
+                        newdb.Tables.Add(newTable);
+                    }
+                    return newdb;
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public string ExecuteMiniSQLQuery(string query)

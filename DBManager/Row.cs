@@ -120,7 +120,7 @@ namespace DbManager
             {
                 if (i > 0)
                 {
-                    result += ",";
+                    result += Delimiter; //cambiado para que sea = en los 2 metodos
                 }
                 result += Encode(Values[i]);
             }
