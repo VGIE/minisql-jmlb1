@@ -216,11 +216,9 @@ namespace DbManager
             {
                 for (int i = 0; i < NumRows(); i++)
                     indices.Add(i);
-
             }
             else
             {
-
                 indices = RowIndicesWhereConditionIsTrue(condition);
             }
 
@@ -231,8 +229,7 @@ namespace DbManager
 
                 foreach (string columnName in columnNames)
                 {
-                    int indiceColumna = ColumnIndexByName(columnName);
-                    values.Add(r.Values[indiceColumna]);
+                    values.Add(r.GetValue(columnName));
                 }
 
                 result.Insert(values);
