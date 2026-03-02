@@ -200,6 +200,59 @@ namespace OurTests
             Assert.Equal(3, result5.NumColumns());
         }
 
+        [Fact]
+        public void TestDeleteWhere()
+        {
+            Database db = new Database("admin", "admin");
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Age")
+            };
+
+            List<ColumnDefinition> columns2 = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Title"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Duration")
+            };
+
+            Table testTable = new Table("Users", columns);
+            Table songs = new Table("Songs", columns2);
+
+            List<string> row1 = new List<string>() { "Alice", "25" };
+            List<string> row2 = new List<string>() { "Bob", "30" };
+            List<string> row3 = new List<string>() { "Charlie", "25" };
+
+            testTable.AddRow(new Row(columns, row1));
+            testTable.AddRow(new Row(columns, row2));
+            testTable.AddRow(new Row(columns, row3));
+
+            List<string> row4 = new List<string>() { "SongA", "3.5" };
+            List<string> row5 = new List<string>() { "SongB", "4.0" };
+            List<string> row6 = new List<string>() { "SongC", "2.8" };
+
+            songs.AddRow(new Row(columns2, row4));
+            songs.AddRow(new Row(columns2, row5));
+            songs.AddRow(new Row(columns2, row6));
+
+            db.AddTable(testTable);
+            db.AddTable(songs);
+
+            //Intentar borrar tabla que no existe
+            Condition condition2 = new Condition("Name", "=", "Bob");
+            Assert.False(db.DeleteWhere("Artists", condition2));
+            Assert.Equal(Constants.TableDoesNotExistError, db.LastErrorMessage);
+
+            //Intentar borrar con columna que no existe
+            Condition condition3 = new Condition("Surname", "=", "Charlie");
+            Assert.False(db.DeleteWhere("Users", condition3));
+            Assert.Equal(Constants.ColumnDoesNotExistError, db.LastErrorMessage);
+
+            Condition condition1 = new Condition("Name", "=", "Alice");
+            Assert.True(db.DeleteWhere("Users", condition1));
+
+        }
+
 
         //UPDATE
         [Fact]

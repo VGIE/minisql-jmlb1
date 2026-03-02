@@ -21,7 +21,7 @@ namespace DbManager
         {
             //TODO DEADLINE 3: Run the query and return the appropriate message
             //CreateTableSuccess or the last error in the database
-            
+
             return null;
             
         }
