@@ -20,7 +20,7 @@ namespace OurTests
             Assert.Equal("String->columnaPrueba", resultado);
         }
         [Fact]
-        public void TestParserValido()
+        public void TestParseValido()
         {
             //prueba válida
             String prueba = "String->Name";
@@ -33,7 +33,7 @@ namespace OurTests
         }
 
         [Fact]
-        public void TestParserDelimEncode()
+        public void TestParseDelimEncode()
         {
             //delimitador codificado (encode) 
             ColumnDefinition column = new ColumnDefinition(ColumnDefinition.DataType.String, "Test->Columns");
@@ -44,6 +44,16 @@ namespace OurTests
 
             Assert.Equal(column.Type, parsedColumn.Type);
             Assert.Equal(column.Name, parsedColumn.Name);
+        }
+
+        [Fact]
+        public void TestTipoInvalido()
+        {
+            //texto con un tipo de datos no válido
+            string text = "InvalidType->ColumnName";
+
+            //el metodo parse debería lanzar un error
+            Assert.Throws<ArgumentException>(() => ColumnDefinition.Parse(text));
         }
     }
 }
