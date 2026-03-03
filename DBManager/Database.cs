@@ -310,7 +310,7 @@ namespace DbManager
                     string fileUser = reader.ReadLine();
                     string filePass = reader.ReadLine();
 
-                    if(fileUser != username && filePass != password)
+                    if(fileUser != username || filePass != password)
                     {
                         return null;
                     }

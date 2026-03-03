@@ -1,5 +1,6 @@
 using DbManager;
 using DbManager.Parser;
+using DbManager.Security;
 using System.Data.Common;
 
 namespace OurTests
@@ -308,6 +309,74 @@ namespace OurTests
 
             // Verificar que la segunda fila (la que NO cumple la condición) NO se modificó
             Assert.Equal(ageOriginalFila1, tabla.GetRow(1).GetValue("Age"));
+        }
+
+        [Fact]
+        public void TestSaveLoad()
+        {
+            Database db = new Database("admin", "adminPassword");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Age"),
+                new ColumnDefinition(ColumnDefinition.DataType.Double, "Height")
+            };
+
+            Table table = new Table("TableTest", columns);
+
+            table.Insert(new List<string>() { "Rodolfo", "25", "1.62" });
+            table.Insert(new List<string>() { "Maider", "67", "1.67" });
+            table.Insert(new List<string>() { "Pepe", "51", "1.55" });
+
+            db.AddTable(table);
+            //lo guardamos
+            string dbName = "testdb";
+            bool saveResult = db.Save(dbName);
+            Assert.True(saveResult);
+            Assert.True(File.Exists(dbName + ".db"));
+
+            //cargarlo
+            Database dbLoad = Database.Load(dbName, "admin", "adminPassword");
+            Assert.NotNull(dbLoad);
+
+            //comprobamos la tabla y los datos
+            Table tableLoad = dbLoad.TableByName("TableTest");
+            Assert.NotNull(tableLoad);
+            Assert.Equal(3, tableLoad.NumColumns());
+            Assert.Equal(3, tableLoad.NumRows());
+            Assert.Equal("Name", tableLoad.GetColumn(0).Name);
+            Assert.Equal(ColumnDefinition.DataType.String, tableLoad.GetColumn(0).Type);
+            Assert.Equal("Age", tableLoad.GetColumn(1).Name);
+            Assert.Equal(ColumnDefinition.DataType.Int, tableLoad.GetColumn(1).Type);
+            Assert.Equal("Height", tableLoad.GetColumn(2).Name);
+            Assert.Equal(ColumnDefinition.DataType.Double, tableLoad.GetColumn(2).Type);
+
+            //1 fila
+            Row row1 = tableLoad.GetRow(0);
+            Assert.Equal("Rodolfo", row1.GetValue("Name"));
+            Assert.Equal("25", row1.GetValue("Age"));
+            Assert.Equal("1.62", row1.GetValue("Height"));
+
+            //2 fila
+            Row row2 = tableLoad.GetRow(1);
+            Assert.Equal("Maider", row2.GetValue("Name"));
+            Assert.Equal("67", row2.GetValue("Age"));
+            Assert.Equal("1.67", row2.GetValue("Height"));
+
+            //3 fila
+            Row row3 = tableLoad.GetRow(2);
+            Assert.Equal("Pepe", row3.GetValue("Name"));
+            Assert.Equal("51", row3.GetValue("Age"));
+            Assert.Equal("1.55", row3.GetValue("Height"));
+
+            //credenciales incorrectas
+            Database dbIncorrecta = Database.Load(dbName, "admin", "wrong");
+            Assert.Null(dbIncorrecta);
+
+            //bd q no existe
+            Database dbNoExiste = Database.Load("noexiste", "admin", "adminPassword");
+            Assert.Null(dbNoExiste);
         }
     }
 }
