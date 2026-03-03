@@ -124,7 +124,7 @@ namespace OurTests
             // Aqu  se asume que el constructor adecuado existe
             Row fila = new Row(new List<ColumnDefinition>(), valores);
 
-            string resultadoEsperado = "Rodolfo,1.62,25";
+            string resultadoEsperado = "Rodolfo:1.62:25";
             string resultadoObtenido = fila.AsText();
 
             Assert.Equal(resultadoEsperado, resultadoObtenido);
@@ -141,28 +141,28 @@ namespace OurTests
         {
             var row = new Row(new List<ColumnDefinition>(), new List<string> { "Value1", "Value2" });
             string result = row.AsText();
-            Assert.Equal("Value1,Value2", result);
+            Assert.Equal("Value1:Value2", result);
         }
         [Fact]
         public void AsText_ShouldEncodeDelimiterInValues()
         {
             var row = new Row(new List<ColumnDefinition>(), new List<string> { "Val:ue1", "Val:ue2" });
             string result = row.AsText();
-            Assert.Equal("Val[SEPARATOR]ue1,Val[SEPARATOR]ue2", result);
+            Assert.Equal("Val[SEPARATOR]ue1:Val[SEPARATOR]ue2", result);
         }
         [Fact]
         public void AsText_ShouldHandleEmptyValues()
         {
             var row = new Row(new List<ColumnDefinition>(), new List<string> { "", "Value2" });
             string result = row.AsText();
-            Assert.Equal(",Value2", result);
+            Assert.Equal(":Value2", result);
         }
         [Fact]
         public void AsText_ShouldHandleAllEmptyValues()
         {
             var row = new Row(new List<ColumnDefinition>(), new List<string> { "", "" });
             string result = row.AsText();
-            Assert.Equal(",", result);
+            Assert.Equal(":", result);
         }
         [Fact]
         public void ParseTest()
