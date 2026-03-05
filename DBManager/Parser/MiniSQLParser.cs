@@ -10,15 +10,17 @@ namespace DbManager
         {
             //TODO DEADLINE 2
             const string selectPattern = null;
-            
-            const string insertPattern = null;
-            
+
+            //LEIRE --> #16
+            const string insertPattern = @"INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)";
+
             const string dropTablePattern = null;
             
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = null;
-            
+
+            //LEIRE
             const string updateTablePattern = null;
             
             const string deletePattern = null;
