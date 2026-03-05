@@ -21,9 +21,19 @@ namespace DbManager.Parser
         {
             //TODO DEADLINE 3: Run the query and return the appropriate message
             //DeleteSuccess or the last error in the database
-            
-            return null;
-            
+
+            //comrpobamos que se elimine correctamente
+            if(database.DeleteWhere(Table, Where) == true)
+            {
+                return Constants.DeleteSuccess;
+            }
+            else
+            {
+                //como no se ha eliminado correctamente devolvemos el error
+                return database.LastErrorMessage;
+            }
+           
+        
         }
     }
 }
