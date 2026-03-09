@@ -54,7 +54,12 @@ namespace DbManager
             {
                 string table = matchInsert.Groups[1].Value;
                 string valores = matchInsert.Groups[2].Value;
-                //"'Juan', 28"
+
+                //Valores sin comas
+                if (!valores.Contains(","))
+                {
+                    return null;
+                }
 
                 string newPattern = @"'[^']+'|\d+\.\d+|\d+";
                 MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
