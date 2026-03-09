@@ -12,7 +12,7 @@ namespace DbManager
             const string selectPattern = null;
 
             //LEIRE --> #16
-            const string insertPattern = @"INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)";
+            const string insertPattern = @"INSERT\s+INTO\s+(\w+)\s+VALUES\s*\(([^)]+)\)";
 
             const string dropTablePattern = null;
             
@@ -38,7 +38,7 @@ namespace DbManager
             const string addUserPattern = null;
             
             const string deleteUserPattern = null;
-            
+
 
             //TODO DEADLINE 2
             //Parse query using the regular expressions above one by one. If there is a match, create an instance of the query with the parsed parameters
@@ -46,9 +46,33 @@ namespace DbManager
             //initialized with the table name, the columns, and (possibly) an instance of Condition.
             //If there is no match, it means there is a syntax error. We will return null.
 
+            //Insert
+            Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
+            if (matchInsert.Success)
+            {
+                string table = matchInsert.Groups[1].Value;
+                string valores = matchInsert.Groups[2].Value;
+                //"'Juan', 28"
+
+                string newPattern = @"'[^']+'|\d+\.\d+|\d+";
+                MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
+
+                List<string> values = new List<string>();
+
+                foreach (Match match in matchCollectionComillas)
+                {
+                    string valor = match.Value;
+                    valor = valor.Trim('\'');
+                    values.Add(valor);
+                }
+
+                return new Insert(table, values);
+            }
+
+
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
-            
+
             return null;
            
         }
