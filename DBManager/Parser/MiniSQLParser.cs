@@ -13,7 +13,7 @@ namespace DbManager
             
             const string insertPattern = null;
             
-            const string dropTablePattern = null;
+            const string dropTablePattern = @"^DROP\s+TABLE\s+([a-zA-Z0-9]+)$";
             
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
