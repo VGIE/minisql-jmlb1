@@ -61,7 +61,7 @@ namespace DbManager
                     return null;
                 }
 
-                string newPattern = @"'[^']+'|\d+\.\d+|\d+";
+                string newPattern = @"'[^']+'";
                 MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
 
                 List<string> values = new List<string>();

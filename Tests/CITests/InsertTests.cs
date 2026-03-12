@@ -15,7 +15,7 @@ namespace SecurityParsingTests
         public void TestAllValidInserts()
         {
             //Test 1: Integers
-            MiniSqlQuery result1 = MiniSQLParser.Parse("INSERT INTO tabla VALUES (1, 2, 3)");
+            MiniSqlQuery result1 = MiniSQLParser.Parse("INSERT INTO tabla VALUES ('1', '2', '3')");
             Assert.NotNull(result1);
             Insert insert1 = Assert.IsType<Insert>(result1);
             Assert.Equal("tabla", insert1.Table);
@@ -24,24 +24,34 @@ namespace SecurityParsingTests
             Assert.Equal("3", insert1.Values[2]);
 
             //Test 2: Strings simples
-            MiniSqlQuery result2 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('Juan', 'Ana')");
+            MiniSqlQuery result2 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('Juan ', 'Ana')");
             Assert.NotNull(result2);
             Insert insert2 = Assert.IsType<Insert>(result2);
-            Assert.Equal("Juan", insert2.Values[0]);
+            Assert.Equal("Juan ", insert2.Values[0]);
             Assert.Equal("Ana", insert2.Values[1]);
 
-            //Test 3: Strings con comas
+            //Test 3: Strings con espacios
             MiniSqlQuery result3 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('Juan', 'Madrid, España')");
             Assert.NotNull(result3);
             Insert insert3 = Assert.IsType<Insert>(result3);
+            Assert.Equal("Juan", insert3.Values[0]);
             Assert.Equal("Madrid, España", insert3.Values[1]);
 
             //Test 4: Con espacios
-            MiniSqlQuery result4 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ( 1 , 'Juan' )");
+            MiniSqlQuery result4 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ( '1' , 'Juan' )");
             Assert.NotNull(result4);
             Insert insert4 = Assert.IsType<Insert>(result4);
             Assert.Equal("1", insert4.Values[0]);
             Assert.Equal("Juan", insert4.Values[1]);
+
+            //Test 5: Double
+            MiniSqlQuery result5 = MiniSQLParser.Parse("INSERT INTO tabla VALUES ('1.3', '8.5', '23.98')");
+            Assert.NotNull(result5);
+            Insert insert5 = Assert.IsType<Insert>(result5);
+            Assert.Equal("tabla", insert5.Table);
+            Assert.Equal("1.3", insert5.Values[0]);
+            Assert.Equal("8.5", insert5.Values[1]);
+            Assert.Equal("23.98", insert5.Values[2]);
         }
 
         [Fact]
