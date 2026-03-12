@@ -76,7 +76,63 @@ namespace DbManager
                 return new Insert(table, values);
             }
 
+           
+            
+            //create table
+            Match createMatch = Regex.Match(miniSQLQuery,createTablePattern);
 
+            //CREATE TABLE válido
+            if (createMatch.Success)
+            {
+                string nombreTabla = createMatch.Groups[1].Value;
+                string columnas = createMatch.Groups[2].Value;
+
+                //lista para guardar las columnas
+                List<ColumnDefinition> crearColumnas = new List<ColumnDefinition>();
+
+                if (!string.IsNullOrWhiteSpace(columnas))
+                {
+                    //separamos las distintas columnas
+                    string[] columnaSep = columnas.Split(',');
+
+                    //para cada columnas
+                    foreach (string parte in columnaSep)
+                    {
+                        //separar nombre y tipo
+                        string[] columna = Regex.Split(parte, @"\s+");
+                        if (columna.Length == 2)
+                        {
+                            string name = columna[0];
+                            string tipo = columna[1];
+
+                            ColumnDefinition.DataType columnType;
+                            if (tipo.Equals("INT"))
+                            {
+                                columnType = ColumnDefinition.DataType.Int;
+                            }
+                            else if (tipo.Equals("TEXT"))
+                            {
+                                columnType = ColumnDefinition.DataType.String;
+                            }
+                            else if (tipo.Equals("DOUBLE"))
+                            {
+                                columnType = ColumnDefinition.DataType.Double;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+
+                            crearColumnas.Add(new ColumnDefinition(columnType, name));
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+                    return new CreateTable(nombreTabla, crearColumnas);
+            }
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
 
