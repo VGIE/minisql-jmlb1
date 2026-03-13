@@ -25,7 +25,7 @@ namespace DbManager
             
             const string updateTablePattern = null;
             
-            const string deletePattern = null;
+            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$"; 
             
 
             //TODO DEADLINE 4
