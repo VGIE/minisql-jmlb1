@@ -55,14 +55,17 @@ namespace DbManager
                 string table = matchInsert.Groups[1].Value;
                 string valores = matchInsert.Groups[2].Value;
 
-                //Valores sin comas
-                if (!valores.Contains(","))
+                string newPattern = @"'[^']+'";
+                MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
+
+                //Contar cuantas comas hay
+                int commaCount = valores.Split(',').Length - 1;
+
+                //Ver si hay los mismos valores que comas +1
+                if (matchCollectionComillas.Count == 0 || matchCollectionComillas.Count != commaCount + 1)
                 {
                     return null;
                 }
-
-                string newPattern = @"'[^']+'";
-                MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
 
                 List<string> values = new List<string>();
 
