@@ -48,6 +48,42 @@ namespace DbManager
             //initialized with the table name, the columns, and (possibly) an instance of Condition.
             //If there is no match, it means there is a syntax error. We will return null.
 
+            //Select
+            Match matchSelect = Regex.Match(miniSQLQuery, selectPattern);
+            if (matchSelect.Success)
+            {
+                //Colmunas del select
+                string columnas = matchSelect.Groups[1].Value;
+                string table = matchSelect.Groups[2].Value;
+                //Condicion del select
+                string condicion = matchSelect.Groups[3].Value;
+                string columna = condicion.Split(' ')[0];
+                // Simbolo y comparando por ejemplo:
+                // simbolo = "<"
+                //comparando = "28"
+                string simbolo = matchSelect.Groups[4].Value;
+                string comparando = matchSelect.Groups[5].Value;
+                comparando = comparando.Trim('\'');
+
+                List<string> columns = new List<string>();
+                string[] cols = columnas.Split(',');
+                //Nunca debería entrar por aquí ya que la regex no lo permite.
+                if (cols.Length == 0)
+                {
+                    return null;
+                }
+
+                foreach (string col in cols)
+                {
+                    columns.Add(col.Trim());
+                }
+
+                Condition condition = new Condition(columna, simbolo, comparando);
+                Select select = new Select(table, columns, condition);
+
+                return select;
+            }
+
             //Insert
             Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
             if (matchInsert.Success)
