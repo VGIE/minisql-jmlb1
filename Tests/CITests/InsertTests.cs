@@ -79,6 +79,9 @@ namespace SecurityParsingTests
 
             MiniSqlQuery result8 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1,' 'Ju,an' 'Madri,d')");
             Assert.Null(result8);
+
+            MiniSqlQuery result9 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1,' 'Juan' 'Madri,d')");
+            Assert.Null(result9);
         }       
     }
 }
