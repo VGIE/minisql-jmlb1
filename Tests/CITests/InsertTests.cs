@@ -55,12 +55,30 @@ namespace SecurityParsingTests
         public void TestAllInvalidInserts()
         {
             //Test 1: Múltiples tablas
-            MiniSqlQuery result1 = MiniSQLParser.Parse("INSERT INTO tabla1, tabla2 VALUES (1, 'Juan')");
+            MiniSqlQuery result1 = MiniSQLParser.Parse("INSERT INTO tabla1, tabla2 VALUES ('1', 'Juan')");
             Assert.Null(result1);
 
-            //Test 2: Faltan comas
-            MiniSqlQuery result2 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES (1 'Juan' 'Madrid')");
+            //Test 2: Espacios y comas
+            MiniSqlQuery result2 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1' 'Juan' 'Madrid')");
             Assert.Null(result2);
+
+            MiniSqlQuery result3 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1 ' 'Juan' 'Madrid')");
+            Assert.Null(result3);
+
+            MiniSqlQuery result4 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1' 'Juan' 'Madrid' )");
+            Assert.Null(result4);
+
+            MiniSqlQuery result5 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1' 'Juan' 'M,adrid')");
+            Assert.Null(result5);
+
+            MiniSqlQuery result6 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1' 'J,uan' 'Madrid')");
+            Assert.Null(result6);
+
+            MiniSqlQuery result7 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1,' 'Juan' 'Madrid')");
+            Assert.Null(result7);
+
+            MiniSqlQuery result8 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1,' 'Ju,an' 'Madri,d')");
+            Assert.Null(result8);
         }       
     }
 }
