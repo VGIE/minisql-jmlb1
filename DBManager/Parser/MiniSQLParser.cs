@@ -1,4 +1,5 @@
 using DbManager.Parser;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -47,6 +48,15 @@ namespace DbManager
             //For example, if the query is a "SELECT ...", there should be a match with selectPattern. We would create and return an instance of Select
             //initialized with the table name, the columns, and (possibly) an instance of Condition.
             //If there is no match, it means there is a syntax error. We will return null.
+
+            //droptable
+            Match dropMatch = Regex.Match(miniSQLQuery, dropTablePattern);
+            if (dropMatch.Success)
+            {
+                string tableName = dropMatch.Groups[1].Value;
+                return new DropTable(tableName);
+            }
+
 
             //Select
             Match matchSelect = Regex.Match(miniSQLQuery, selectPattern);
