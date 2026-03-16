@@ -56,8 +56,7 @@ namespace DbManager
                 string columnas = matchSelect.Groups[1].Value;
                 string table = matchSelect.Groups[2].Value;
                 //Condicion del select
-                string condicion = matchSelect.Groups[3].Value;
-                string columna = condicion.Split(' ')[0];
+                string columna = matchSelect.Groups[3].Value;
                 // Simbolo y comparando por ejemplo:
                 // simbolo = "<"
                 //comparando = "28"
@@ -65,27 +64,22 @@ namespace DbManager
                 string comparando = matchSelect.Groups[5].Value;
                 comparando = comparando.Trim('\'');
 
-                List<string> columns = new List<string>();
-                string[] cols = columnas.Split(',');
-                //Nunca debería entrar por aquí ya que la regex no lo permite.
-                if (cols.Length == 0)
-                {
-                    return null;
-                }
+                //Nombre de las columnas
+                List<string> columns = CommaSeparatedNames(columnas);
 
-                foreach (string col in cols)
-                {
-                    columns.Add(col.Trim());
-                }
-
+  
                 Condition condition = new Condition(columna, simbolo, comparando);
                 Select select = new Select(table, columns, condition);
 
                 return select;
             }
+            else
+            {
+                return null;
+            }
 
-            //Insert
-            Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
+                //Insert
+                Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
             if (matchInsert.Success)
             {
                 string table = matchInsert.Groups[1].Value;
