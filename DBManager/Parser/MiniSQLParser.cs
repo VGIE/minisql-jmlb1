@@ -1,5 +1,6 @@
 using DbManager.Parser;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Text.RegularExpressions;
 
 namespace DbManager
@@ -22,9 +23,10 @@ namespace DbManager
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\(\s*(.*?)\s*\)";
-            
-            const string updateTablePattern = null;
-            
+            //LEIRE --> #26
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+)\s+WHERE\s+(.+)$";
+
+
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$"; 
             
 
@@ -173,6 +175,48 @@ namespace DbManager
                 }
                     return new CreateTable(nombreTabla, crearColumnas);
             }
+
+            //Update
+            Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
+
+            if (matchUpdate.Success)
+            {
+                string table = matchUpdate.Groups[1].Value;
+                string assignments = matchUpdate.Groups[2].Value;
+
+                string whereCondition;
+                if (matchUpdate.Groups[3].Success)
+                {
+                    whereCondition = matchUpdate.Groups[3].Value;
+                }
+                else
+                {
+                    whereCondition = null;
+                }
+
+                // Patrón para col=valor 
+                string assignPatternColVa = @"(\w+)\s*=\s*('[^']*'|\d+\.\d+|\d+)";
+                MatchCollection matches = Regex.Matches(assignments, assignPatternColVa);
+
+                List<SetValue> setValues = new List<SetValue>();
+
+                foreach (Match match in matches)
+                {
+                    string column = match.Groups[1].Value;
+                    string valor = match.Groups[2].Value;
+                    valor = valor.Trim('\'');
+                    setValues.Add(new SetValue(column, valor));
+                }
+
+                Condition condition = null;
+                if (!string.IsNullOrEmpty(whereCondition))
+                {
+                    condition = new Condition(whereCondition);
+                }
+
+                return new Update(table, setValues, whereCondition);
+            }
+
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
 
