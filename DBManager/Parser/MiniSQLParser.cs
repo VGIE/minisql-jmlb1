@@ -73,10 +73,6 @@ namespace DbManager
 
                 return select;
             }
-            else
-            {
-                return null;
-            }
 
                 //Insert
                 Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
