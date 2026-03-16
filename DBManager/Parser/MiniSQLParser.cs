@@ -84,9 +84,10 @@ namespace DbManager
                 string newPattern = @"'[^']+'";
                 MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
 
-                //Contar cuantas comas hay
-                int commaCount = valores.Split(',').Length - 1;
-
+                //Contar cuantas comas hay y sustituir por #
+                string sinComillas = Regex.Replace(valores, @"'[^']*'", "#");
+                int commaCount = sinComillas.Split(',').Length - 1;
+                
                 //Ver si hay los mismos valores que comas +1
                 if (matchCollectionComillas.Count == 0 || matchCollectionComillas.Count != commaCount + 1)
                 {
