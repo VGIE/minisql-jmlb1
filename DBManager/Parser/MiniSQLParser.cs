@@ -1,4 +1,5 @@
 using DbManager.Parser;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -9,36 +10,35 @@ namespace DbManager
         public static MiniSqlQuery Parse(string miniSQLQuery)
         {
             //TODO DEADLINE 2
-            const string selectPattern = @"/^SELECT\s+(\*|[a-zA-Z0-9]+(?:,[a-zA-Z0-9]+)*)\sFROM\s([a-zA-Z0-9]+)\sWHERE\s([a-zA-Z0-9]+\s(>|<|=)\s'([-]*[a-zA-Z0-9]+([.]*[a-zA-Z0-9]+)*)')$";
-            
-            
+            const string selectPattern = @"^SELECT\s+([a-zA-Z0-9]+(?:,[a-zA-Z0-9]+)*)\s+FROM\s+([a-zA-Z0-9]+)(\s+WHERE\s+([a-zA-Z0-9]+(>|<|=)'((-[0-9]+(\.[0-9]+)?)|([0-9]+(\.[0-9]+)?)|([a-zA-Z0-9]+(?:\s[a-zA-Z0-9]+)*))'))?$";
+
+
             const string dropTablePattern = @"^DROP\s+TABLE\s+([a-zA-Z0-9]+)$";
-          
+
 
             //LEIRE --> #16
             const string insertPattern = @"INSERT\s+INTO\s+(\w+)\s+VALUES\s*\(([^)]+)\)";
 
-            
+
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\(\s*(.*?)\s*\)";
-            
-            const string updateTablePattern = null;
-            
-            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$"; 
-            
+            //LEIRE --> #26
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$";
+
+            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$";
 
             //TODO DEADLINE 4
             const string createSecurityProfilePattern = null;
-            
+
             const string dropSecurityProfilePattern = null;
-            
+
             const string grantPattern = null;
-            
+
             const string revokePattern = null;
-            
+
             const string addUserPattern = null;
-            
+
             const string deleteUserPattern = null;
 
 
@@ -48,6 +48,15 @@ namespace DbManager
             //initialized with the table name, the columns, and (possibly) an instance of Condition.
             //If there is no match, it means there is a syntax error. We will return null.
 
+            //droptable
+            Match dropMatch = Regex.Match(miniSQLQuery, dropTablePattern);
+            if (dropMatch.Success)
+            {
+                string tableName = dropMatch.Groups[1].Value;
+                return new DropTable(tableName);
+            }
+
+         
             //Select
             Match matchSelect = Regex.Match(miniSQLQuery, selectPattern);
             if (matchSelect.Success)
@@ -67,15 +76,15 @@ namespace DbManager
                 //Nombre de las columnas
                 List<string> columns = CommaSeparatedNames(columnas);
 
-  
+
                 Condition condition = new Condition(columna, simbolo, comparando);
                 Select select = new Select(table, columns, condition);
 
                 return select;
             }
 
-                //Insert
-                Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
+            //Insert
+            Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);
             if (matchInsert.Success)
             {
                 string table = matchInsert.Groups[1].Value;
@@ -106,10 +115,10 @@ namespace DbManager
                 return new Insert(table, values);
             }
 
-           
-            
+
+
             //create table
-            Match createMatch = Regex.Match(miniSQLQuery,createTablePattern);
+            Match createMatch = Regex.Match(miniSQLQuery, createTablePattern);
 
             //CREATE TABLE válido
             if (createMatch.Success)
@@ -161,25 +170,104 @@ namespace DbManager
                         }
                     }
                 }
-                    return new CreateTable(nombreTabla, crearColumnas);
+                return new CreateTable(nombreTabla, crearColumnas);
             }
+
+            //Update
+            Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
+
+            if (matchUpdate.Success)
+            {
+                string table = matchUpdate.Groups[1].Value;
+                string valores = matchUpdate.Groups[2].Value;
+
+                string whereCondition;
+                if (matchUpdate.Groups[3].Success)
+                {
+                    whereCondition = matchUpdate.Groups[3].Value;
+                }
+                else
+                {
+                    whereCondition = null;
+                }
+
+                string validSetPattern = @"^\s*(\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)(,\s*\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)*$";
+                //Formato inválido (faltan comas)
+                if (!Regex.IsMatch(valores, validSetPattern))
+                {
+                    return null; 
+                }
+
+                //Patrón para col=valor 
+                string assignPatternColVa = @"(\w+)\s*=\s*('[^']*'|\d+\.\d+|\d+)";
+                MatchCollection colVal = Regex.Matches(valores, assignPatternColVa);
+
+                List<SetValue> setValues = new List<SetValue>();
+
+                foreach (Match match in colVal)
+                {
+                    string column = match.Groups[1].Value;
+                    string valor = match.Groups[2].Value;
+                    valor = valor.Trim('\'');
+                    setValues.Add(new SetValue(column, valor));
+                }
+
+                if (setValues.Count == 0)
+                {
+                    return null;
+                }
+
+                Condition condition = null;
+                if (!string.IsNullOrEmpty(whereCondition))
+                {
+                    //Parsear la condición where ("campo = valor")
+                    string wherePattern = @"(\w+)\s*([=<>!]+)\s*('[^']*'|\d+\.\d+|\d+)";
+                    Match whereMatch = Regex.Match(whereCondition, wherePattern);
+
+                    if (whereMatch.Success)
+                    {
+                        string field = whereMatch.Groups[1].Value;
+                        string op = whereMatch.Groups[2].Value;
+                        string value = whereMatch.Groups[3].Value;
+
+                        //Rechazar otros que no sean "<,>,="
+                        if (op != "=" && op != ">" && op != "<")
+                        {
+                            return null; 
+                        }
+
+                        value = value.Trim('\'');
+                        condition = new Condition(field,op,value);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return new Update(table, setValues, condition);
+            }
+
+
+
+
+
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
 
             return null;
-           
+
         }
 
         static List<string> CommaSeparatedNames(string text)
         {
             string[] textParts = text.Split(",", System.StringSplitOptions.RemoveEmptyEntries);
             List<string> commaSeparator = new List<string>();
-            for(int i=0; i < textParts.Length; i++)
+            for (int i = 0; i < textParts.Length; i++)
             {
                 commaSeparator.Add(textParts[i]);
             }
             return commaSeparator;
         }
-        
+
     }
 }
