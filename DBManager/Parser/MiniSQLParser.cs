@@ -23,6 +23,8 @@ namespace DbManager
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\(\s*(.*?)\s*\)";
+            //LEIRE --> #26
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$";
 
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$";
 
@@ -170,6 +172,85 @@ namespace DbManager
                 }
                 return new CreateTable(nombreTabla, crearColumnas);
             }
+
+            //Update
+            Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
+
+            if (matchUpdate.Success)
+            {
+                string table = matchUpdate.Groups[1].Value;
+                string valores = matchUpdate.Groups[2].Value;
+
+                string whereCondition;
+                if (matchUpdate.Groups[3].Success)
+                {
+                    whereCondition = matchUpdate.Groups[3].Value;
+                }
+                else
+                {
+                    whereCondition = null;
+                }
+
+                string validSetPattern = @"^\s*(\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)(,\s*\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)*$";
+                //Formato inválido (faltan comas)
+                if (!Regex.IsMatch(valores, validSetPattern))
+                {
+                    return null; 
+                }
+
+                //Patrón para col=valor 
+                string assignPatternColVa = @"(\w+)\s*=\s*('[^']*'|\d+\.\d+|\d+)";
+                MatchCollection colVal = Regex.Matches(valores, assignPatternColVa);
+
+                List<SetValue> setValues = new List<SetValue>();
+
+                foreach (Match match in colVal)
+                {
+                    string column = match.Groups[1].Value;
+                    string valor = match.Groups[2].Value;
+                    valor = valor.Trim('\'');
+                    setValues.Add(new SetValue(column, valor));
+                }
+
+                if (setValues.Count == 0)
+                {
+                    return null;
+                }
+
+                Condition condition = null;
+                if (!string.IsNullOrEmpty(whereCondition))
+                {
+                    //Parsear la condición where ("campo = valor")
+                    string wherePattern = @"(\w+)\s*([=<>!]+)\s*('[^']*'|\d+\.\d+|\d+)";
+                    Match whereMatch = Regex.Match(whereCondition, wherePattern);
+
+                    if (whereMatch.Success)
+                    {
+                        string field = whereMatch.Groups[1].Value;
+                        string op = whereMatch.Groups[2].Value;
+                        string value = whereMatch.Groups[3].Value;
+
+                        //Rechazar otros que no sean "<,>,="
+                        if (op != "=" && op != ">" && op != "<")
+                        {
+                            return null; 
+                        }
+
+                        value = value.Trim('\'');
+                        condition = new Condition(field,op,value);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return new Update(table, setValues, condition);
+            }
+
+
+
+
+
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
 
