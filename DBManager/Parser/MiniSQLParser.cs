@@ -57,15 +57,7 @@ namespace DbManager
                 return new DropTable(tableName);
             }
 
-            //droptable
-            Match dropMatch = Regex.Match(miniSQLQuery, dropTablePattern);
-            if (dropMatch.Success)
-            {
-                string tableName = dropMatch.Groups[1].Value;
-                return new DropTable(tableName);
-            }
-
-
+         
             //Select
             Match matchSelect = Regex.Match(miniSQLQuery, selectPattern);
             if (matchSelect.Success)
