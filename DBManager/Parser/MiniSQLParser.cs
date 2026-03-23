@@ -26,7 +26,7 @@ namespace DbManager
             //LEIRE --> #26
             const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$";
 
-            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(<|=|>)'([^']*)'$";
+            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)\s*([<>=])\s*'([^']*)'$";
 
             //TODO DEADLINE 4
             const string createSecurityProfilePattern = null;
@@ -247,7 +247,18 @@ namespace DbManager
                 return new Update(table, setValues, condition);
             }
 
+            //Delete
+            Match matchDelete = Regex.Match(miniSQLQuery, deletePattern);
+            if (matchDelete.Success)
+            {
+                string table = matchDelete.Groups[1].Value;
+                string whereColumn = matchDelete.Groups[2].Value;
+                string whereOperator = matchDelete.Groups[3].Value;
+                string whereValue = matchDelete.Groups[4].Value;
 
+                Condition condition = new Condition(whereColumn, whereOperator, whereValue);
+                return new Delete(table, condition);
+            }
 
 
 
