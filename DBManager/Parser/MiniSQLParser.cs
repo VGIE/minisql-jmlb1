@@ -18,7 +18,7 @@ namespace DbManager
 
 
             //LEIRE --> #16
-            const string insertPattern = @"INSERT\s+INTO\s+(\w+)\s+VALUES\s*\(([^)]+)\)";
+            const string insertPattern = @"^INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
 
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
@@ -91,26 +91,14 @@ namespace DbManager
                 string table = matchInsert.Groups[1].Value;
                 string valores = matchInsert.Groups[2].Value;
 
-                string newPattern = @"'[^']+'";
-                MatchCollection matchCollectionComillas = Regex.Matches(valores, newPattern);
-
-                //Contar cuantas comas hay y sustituir por #
-                string sinComillas = Regex.Replace(valores, @"'[^']*'", "#");
-                int commaCount = sinComillas.Split(',').Length - 1;
-
-                //Ver si hay los mismos valores que comas +1
-                if (matchCollectionComillas.Count == 0 || matchCollectionComillas.Count != commaCount + 1)
-                {
-                    return null;
-                }
-
+                string[] valoresArray = valores.Split(',');
                 List<string> values = new List<string>();
 
-                foreach (Match match in matchCollectionComillas)
+                foreach (string valor in valoresArray)
                 {
-                    string valor = match.Value;
-                    valor = valor.Trim('\'');
-                    values.Add(valor);
+                    // Quitar las comillas simples
+                    string valorSinComillas = valor.Trim('\'');
+                    values.Add(valorSinComillas);
                 }
 
                 return new Insert(table, values);
