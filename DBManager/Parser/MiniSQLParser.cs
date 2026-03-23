@@ -26,7 +26,7 @@ namespace DbManager
             //LEIRE --> #26
             const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$";
 
-            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)\s*([<>=])\s*'([^']*)'$";
+            const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
             //TODO DEADLINE 4
             const string createSecurityProfilePattern = null;
