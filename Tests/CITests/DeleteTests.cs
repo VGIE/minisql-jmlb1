@@ -16,7 +16,7 @@ namespace SecurityParsingTests
         public void ValidDelete()
         {
             //con espacios
-            Delete query1 = MiniSQLParser.Parse("DELETE FROM    users    WHERE   id   =   '5'") as Delete;
+            Delete query1 = MiniSQLParser.Parse("DELETE FROM    users    WHERE   id='5'") as Delete;
             Assert.NotNull(query1);
             Assert.Equal("users", query1.Table);
             Assert.NotNull(query1.Where);
@@ -43,6 +43,14 @@ namespace SecurityParsingTests
         [Fact]
         public void InvalidDelete()
         {
+            //varios operadores
+            Delete query = MiniSQLParser.Parse("DELETE FROM users WHERE id<='5'") as Delete;
+            Assert.Null(query);
+
+            //con espacios en la condición
+            Delete query0 = MiniSQLParser.Parse("DELETE FROM    users    WHERE   id    =    '5'") as Delete;
+            Assert.Null(query0);
+
             //sin espacio 
             Delete query1 = MiniSQLParser.Parse("DELETEFROM users WHERE id='5'") as Delete;
             Assert.Null(query1);
