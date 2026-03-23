@@ -18,14 +18,14 @@ namespace DbManager
 
 
             //LEIRE --> #16
-            const string insertPattern = @"^INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
+            const string insertPattern = @"INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
 
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //LEIRE --> #26
-            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$";
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+([^WHERE]+)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'|\d+(?:\.\d+)?))?$";
 
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
@@ -164,41 +164,54 @@ namespace DbManager
 
             //Update
             Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
-
             if (matchUpdate.Success)
             {
                 string table = matchUpdate.Groups[1].Value;
                 string valores = matchUpdate.Groups[2].Value;
+                string whereColumn = null;
+                string whereOp = null;
+                string whereValue = null;
 
-                string whereCondition;
                 if (matchUpdate.Groups[3].Success)
                 {
-                    whereCondition = matchUpdate.Groups[3].Value;
-                }
-                else
-                {
-                    whereCondition = null;
+                    whereColumn = matchUpdate.Groups[3].Value;
+                    whereOp = matchUpdate.Groups[4].Value;
+                    whereValue = matchUpdate.Groups[5].Value;
                 }
 
-                string validSetPattern = @"^\s*(\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)(,\s*\w+\s*=\s*('[^']*'|\d+\.\d+|\d+)\s*)*$";
-                //Formato inválido (faltan comas)
-                if (!Regex.IsMatch(valores, validSetPattern))
+                string setPartSinComillas = Regex.Replace(valores, @"'[^']*'", "#");
+                if (setPartSinComillas.Contains(" ,") || setPartSinComillas.Contains(", "))
                 {
-                    return null; 
+                    return null;
                 }
-
-                //Patrón para col=valor 
-                string assignPatternColVa = @"(\w+)\s*=\s*('[^']*'|\d+\.\d+|\d+)";
-                MatchCollection colVal = Regex.Matches(valores, assignPatternColVa);
 
                 List<SetValue> setValues = new List<SetValue>();
+                string[] assignments = valores.Split(',');
 
-                foreach (Match match in colVal)
+                foreach (string assignment in assignments)
                 {
-                    string column = match.Groups[1].Value;
-                    string valor = match.Groups[2].Value;
-                    valor = valor.Trim('\'');
-                    setValues.Add(new SetValue(column, valor));
+                    if (!assignment.Contains("="))
+                    {
+                        return null;
+                    }
+
+                    string[] parts = assignment.Split('=');
+                    if (parts.Length != 2)
+                    {
+                        return null;
+                    }
+
+                    string column = parts[0].Trim();
+                    string value = parts[1].Trim();
+
+                    if (!value.StartsWith("'") || !value.EndsWith("'"))
+                    {
+                        return null;
+                    }
+
+                    value = value.Substring(1, value.Length - 2);
+
+                    setValues.Add(new SetValue(column, value));
                 }
 
                 if (setValues.Count == 0)
@@ -206,33 +219,20 @@ namespace DbManager
                     return null;
                 }
 
+                // Parsear WHERE
                 Condition condition = null;
-                if (!string.IsNullOrEmpty(whereCondition))
+                if (whereColumn != null)
                 {
-                    //Parsear la condición where ("campo = valor")
-                    string wherePattern = @"(\w+)\s*([=<>!]+)\s*('[^']*'|\d+\.\d+|\d+)";
-                    Match whereMatch = Regex.Match(whereCondition, wherePattern);
-
-                    if (whereMatch.Success)
-                    {
-                        string field = whereMatch.Groups[1].Value;
-                        string op = whereMatch.Groups[2].Value;
-                        string value = whereMatch.Groups[3].Value;
-
-                        //Rechazar otros que no sean "<,>,="
-                        if (op != "=" && op != ">" && op != "<")
-                        {
-                            return null; 
-                        }
-
-                        value = value.Trim('\'');
-                        condition = new Condition(field,op,value);
-                    }
-                    else
+                    // Solo aceptar valores entre comillas simples
+                    if (!whereValue.StartsWith("'") || !whereValue.EndsWith("'"))
                     {
                         return null;
                     }
+
+                    whereValue = whereValue.Substring(1, whereValue.Length - 2);
+                    condition = new Condition(whereColumn, whereOp, whereValue);
                 }
+
                 return new Update(table, setValues, condition);
             }
 
