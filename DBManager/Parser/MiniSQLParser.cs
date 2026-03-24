@@ -25,7 +25,7 @@ namespace DbManager
             //And then, an execution error should be given if a CreateTable without columns is executed
             const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //LEIRE --> #26
-            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+([^WHERE]+)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'|\d+(?:\.\d+)?))?$";
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
 
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
@@ -186,7 +186,7 @@ namespace DbManager
                 }
 
                 List<SetValue> setValues = new List<SetValue>();
-                string[] assignments = valores.Split(',');
+                string[] assignments = Regex.Split(valores, @",(?=(?:[^']*'[^']*')*[^']*$)");
 
                 foreach (string assignment in assignments)
                 {
@@ -210,7 +210,6 @@ namespace DbManager
                     }
 
                     value = value.Substring(1, value.Length - 2);
-
                     setValues.Add(new SetValue(column, value));
                 }
 
