@@ -179,6 +179,11 @@ namespace DbManager
                     whereValue = matchUpdate.Groups[5].Value;
                 }
 
+                if (miniSQLQuery.ToUpper().Contains("WHERE") && (whereOp == null || whereValue == null))
+                {
+                    return null;
+                }
+
                 string setPartSinComillas = Regex.Replace(valores, @"'[^']*'", "#");
                 if (setPartSinComillas.Contains(" ,") || setPartSinComillas.Contains(", "))
                 {
