@@ -22,9 +22,33 @@ namespace DbManager
             //TODO DEADLINE 3: Run the query and return the appropriate message
             //CreateTableSuccess or the last error in the database
 
-            return null;
-            
-        }
+            //No existe database
+            if (database == null)
+            {
+                return Constants.Error;
+            }
+            //El nombre de la tabla ya existe en la base de datos
+            Table t = database.TableByName(Table);
 
+            if(t != null)
+            {
+                return Constants.TableAlreadyExistsError;
+            }
+            //No hay columnas en la tabla
+            int ncol = t.NumColumns();
+            
+            if(ncol == 0)
+            {
+                return Constants.DatabaseCreatedWithoutColumnsError;
+            }
+            //Tabla creada con éxito
+            if(database.CreateTable(Table,ColumnsParameters))
+            {
+                return Constants.CreateTableSuccess;
+            }
+         
+            return Constants.Error;   
+        }
+        
     }
 }
