@@ -79,5 +79,69 @@ namespace SecurityParsingTests
             Delete query7 = MiniSQLParser.Parse("DELETE FROM users") as Delete;
             Assert.Null(query7);
         }
+
+        [Fact]
+        public void Execute()
+        {
+            //crear base de datos
+            Database db = new Database("admin", "admin");
+            //crear lista de columnas
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                //crear las columnas 
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Age")
+
+            };
+
+            Table tabla = new Table("TablaPrueba", columns);
+
+            //creamos los valores para las filas
+            List<String> value1 = new List<String>() { "Markel", "20" };
+            List<String> value2 = new List<String>() { "Ainhoa", "21" };
+            List<String> value3 = new List<String>() { "Jon", "22" };
+
+            //creamos las filas y las añadimos a la tabla
+            Row row1 = new Row(columns, value1);
+            Row row2 = new Row(columns, value2);
+            Row row3 = new Row(columns, value3);
+
+            tabla.AddRow(row1);
+            tabla.AddRow(row2);
+            tabla.AddRow(row3);
+
+            //añadimos la tabla a la base de datos
+            db.AddTable(tabla);
+
+            //primero tiene 3 lineas
+            Assert.Equal(3, tabla.NumRows());
+
+            //pruebas de borrar
+
+            Condition con1 = new Condition("Name", "=", "Markel");
+            DbManager.Parser.Delete del1 = new DbManager.Parser.Delete("TablaPrueba", con1);
+            del1.Execute(db);
+
+            Table tablacon1 = db.TableByName("TablaPrueba");
+            //hemos eliminado una linea, quedan 2 
+            Assert.Equal(2, tablacon1.NumRows());
+
+
+            Condition con2 = new Condition("Age", ">", "24");
+            DbManager.Parser.Delete del2 = new DbManager.Parser.Delete("TablaPrueba", con2);
+            del2.Execute(db);
+
+            Table tablacon2 = db.TableByName("TablaPrueba");
+            //no hemos eliminado ninguna
+            Assert.Equal(2, tablacon2.NumRows());
+
+            Condition con3 = new Condition("Age", "<", "22");
+            DbManager.Parser.Delete del3 = new DbManager.Parser.Delete("TablaPrueba", con3);
+            del3.Execute(db);
+
+            Table tablacon3 = db.TableByName("TablaPrueba");
+            Assert.Equal(1, tablacon3.NumRows());
+
+        }
     }
 }
