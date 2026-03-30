@@ -21,11 +21,32 @@ namespace DbManager
         {
             //TODO DEADLINE 3: Run the query and return the appropriate message
             //UpdateSuccess or the last error in the database
-            
-            return null;
-            
-        }
 
-       
+            if (database == null)
+            {
+                return Constants.Error;
+            }
+
+            Table tableToUpdate = database.TableByName(Table);
+
+            if (tableToUpdate == null)
+            {
+                return Constants.TableDoesNotExistError;
+            }
+
+            if (Columns.Count == 0)
+            {
+                return Constants.ColumnCountsDontMatch;
+            }
+
+            bool result = database.Update(Table, Columns, Where);
+
+            if (result)
+            {
+                return Constants.UpdateSuccess;
+            }
+
+            return database.LastErrorMessage;
+        }
     }
 }

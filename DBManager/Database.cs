@@ -235,6 +235,15 @@ namespace DbManager
                 return false;
             }
 
+            foreach (SetValue setValue in columnNames)
+            {
+                if (table.ColumnIndexByName(setValue.ColumnName) == -1)
+                {
+                    LastErrorMessage = Constants.ColumnDoesNotExistError;
+                    return false;
+                }
+            }
+
             //Column in the condition exist?
             if (columnCondition != null)
             {
