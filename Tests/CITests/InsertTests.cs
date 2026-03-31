@@ -78,6 +78,48 @@ namespace SecurityParsingTests
 
             MiniSqlQuery result9 = MiniSQLParser.Parse("INSERT INTO usuarios VALUES ('1,' 'Juan' 'Madri,d')");
             Assert.Null(result9);
-        }       
+        }
+        
+        [Fact]
+        public void Execute()
+        {
+            //crear la base de datos
+            Database db = new Database("admin", "admin");
+
+            //creamos lista para las columnas
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                //creamos las columnas
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"),
+                new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad")
+            };
+
+           
+            //creamos la tabla
+            Table table = new Table("TablaPrueba", columns);
+            
+            //añadir la tabla a la base de datos
+            db.AddTable(table);
+
+            //valores que vamos a insertar en cada fila
+            List<String> value1 = new List<String>() { "Markel", "20" };
+            List<String> value2 = new List<String>() { "Ainhoa", "21" };
+            List<String> value3 = new List<String>() { "Jon", "22" };
+
+            //operaciones
+            Insert ins1 = new Insert("TablaPrueba", value1);
+            Insert ins2 = new Insert("TablaPrueba", value2);
+            Insert ins3 = new Insert("TablaPrueba", value3);
+
+            string op1 = ins1.Execute(db);
+            string op2 = ins2.Execute(db);
+            string op3 = ins3.Execute(db);
+
+            //probar que se han insertado
+            Assert.Equal(Constants.InsertSuccess, op1);
+            Assert.Equal(Constants.InsertSuccess, op2);
+            Assert.Equal(Constants.InsertSuccess, op3);
+
+        }
     }
 }
