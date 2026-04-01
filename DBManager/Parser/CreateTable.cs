@@ -35,9 +35,8 @@ namespace DbManager
                 return Constants.TableAlreadyExistsError;
             }
             //No hay columnas en la tabla
-            int ncol = t.NumColumns();
-            
-            if(ncol == 0)
+           
+            if(ColumnsParameters == null || ColumnsParameters.Count == 0)
             {
                 return Constants.DatabaseCreatedWithoutColumnsError;
             }
