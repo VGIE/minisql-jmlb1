@@ -15,7 +15,10 @@ namespace DbManager
         public Revoke(string privilegeName, string tableName, string profileName)
         {
             //TODO DEADLINE 4: Initialize member variables
-            
+            PrivilegeName = privilegeName;
+            TableName = tableName;
+            ProfileName = profileName;
+
         }
         public string Execute(Database database)
         {
