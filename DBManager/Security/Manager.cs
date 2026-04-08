@@ -39,6 +39,26 @@ namespace DbManager.Security
             //TODO DEADLINE 5: Add this privilege on this table to the profile with this name
             //If the profile or the table don't exist, do nothing
             
+            //comprobamos que el usuario es admin ********
+            if(!IsUserAdmin())
+            {
+                //si no lo es devuelve vacio
+                return;
+            }
+            //comprobar que la tabla y el usuario existen
+            if(profileName == null || table == null)
+            {
+                return;
+            }
+
+            //buscamos el perfil
+            Profile profile = ProfileByName(profileName);
+            if(profile != null) 
+            {
+            
+              profile.GrantPrivilege(table, privilege);
+                
+            }
         }
 
         public void RevokePrivilege(string profileName, string table, Privilege privilege)
