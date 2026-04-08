@@ -29,7 +29,26 @@ namespace DbManager.Security
         public bool IsPasswordCorrect(string username, string password)
         {
             //TODO DEADLINE 5: Return true if the user's password is correct. The given password should be encrypted before comparing with the saved one
-            
+            //encriptamos para poder comparar
+            string encrypted = Encryption.Encrypt(password);
+
+            //recorremos perfiles
+            for (int i = 0; i < Profiles.Count; i++)
+            {
+                if (Profiles[i] != null)
+                {
+                    //recorremos todos los usuarios de ese perfil
+                    for (int j = 0; j < Profiles[i].Users.Count; j++)
+                    {
+                        //comparamos
+                        if (Profiles[i].Users[j].Username == username &&
+                            Profiles[i].Users[j].EncryptedPassword == encrypted)
+                        {
+                            return true;  
+                        }
+                    }
+                }
+            }
             return false;
             
         }
