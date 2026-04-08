@@ -17,8 +17,28 @@ namespace DbManager.Security
         public bool GrantPrivilege(string table, Privilege privilege)
         {
             //TODO DEADLINE 5: Grant this privilege on this table. Return false if there is an error, true otherwise
-            
-            return false;
+
+            //comprobamos si son válidos los datos
+            if (table == null || privilege == null)
+            {
+                return false;
+            }
+
+            // si no está la tabla en el dicc la creamos 
+            if (!PrivilegesOn.ContainsKey(table))
+            {
+                PrivilegesOn[table] = new List<Privilege>();
+            }
+
+            //comprobamos si la tabla ya tiene ese privilegio
+            if (PrivilegesOn[table].Contains(privilege))
+            {
+                return false;
+            }
+
+            //si todo es correcto añadimos ese privilegio a esa tabla
+            PrivilegesOn[table].Add(privilege);
+            return true;
             
         }
 
