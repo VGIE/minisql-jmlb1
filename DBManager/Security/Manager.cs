@@ -98,7 +98,18 @@ namespace DbManager.Security
         public void AddProfile(Profile profile)
         {
             //TODO DEADLINE 5: Add this profile
-            
+
+            //si es administrados puede añadir perfiles
+            if(IsUserAdmin())
+            {
+                //comprobar que el perfil no es nulo y que no esta ya añadido
+                if(profile != null && !Profiles.Contains(profile))
+                {
+                    Profiles.Add(profile);
+                }
+            }
+            //si no es administrados no hace nada
+                        
         }
 
         public User UserByName(string username)
@@ -142,8 +153,32 @@ namespace DbManager.Security
         public bool RemoveProfile(string profileName)
         {
             //TODO DEADLINE 5: Remove this profile
+
+            //si no es administrados no puede eliminar
+            if (!IsUserAdmin())
+            {
+                       
+                return false;
+            }
+
+            //no se puede eliminar a si mismo 
+            if(profileName == Profile.AdminProfileName)
+            {
+                return false;
+            }
+
+            //buscamos el perfil
+            var perfil = ProfileByName(profileName);
             
+            //comprobar que no sea nula
+            if(perfil != null && Profiles.Contains(perfil))
+            {
+                return Profiles.Remove(perfil);
+
+            }
+
             return false;
+                
         }
 
         public static Manager Load(string databaseName, string username)
