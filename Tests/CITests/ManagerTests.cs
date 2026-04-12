@@ -88,7 +88,29 @@ namespace SecurityParsingTests
             Assert.False(result);
         }
 
-        
+        [Fact]
+        public void TestUserByName()
+        {
+            Manager manager = new Manager("admin");
+
+            Profile profile1 = new Profile { Name = "Admin" };
+            User user1 = new User("john", "1234");
+            profile1.Users.Add(user1);
+            manager.Profiles.Add(profile1);
+
+            // Usuario existe 
+            User result1 = manager.UserByName("john");
+            Assert.NotNull(result1);
+            Assert.Equal("john", result1.Username);
+
+            // Usuario no existe
+            User result3 = manager.UserByName("peter");
+            Assert.Null(result3);
+
+            // Username null
+            User result4 = manager.UserByName(null);
+            Assert.Null(result4);
+        }
 
     }
 }

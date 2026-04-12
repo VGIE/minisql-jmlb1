@@ -84,7 +84,21 @@ namespace DbManager.Security
         {
             //TODO DEADLINE 5: Remove this privilege on this table to the profile with this name
             //If the profile or the table don't exist, do nothing
-            
+
+            if (profileName == null || table == null)
+            {
+                return;
+            }
+
+            if (IsUserAdmin()){
+
+                Profile profile = ProfileByName(profileName);
+                
+                if(profile != null)
+                {
+                    profile.RevokePrivilege(table, privilege);
+                }
+            }
         }
 
         public bool IsGrantedPrivilege(string username, string table, Privilege privilege)
@@ -114,11 +128,27 @@ namespace DbManager.Security
 
         public User UserByName(string username)
         {
-            //TODO DEADLINE 5: Return the user by name. If it doesn't exist, return null
-            
+            if (username == null)
+            {
+                return null;
+            }
+
+            foreach (Profile p in Profiles)
+            {
+                List<User> users = p.Users;
+
+                foreach (User u in users)
+                {
+                    if (u.Username == username)
+                    {
+                        return u;
+                    }
+                }
+            }
+
             return null;
-            
         }
+
 
         public Profile ProfileByName(string profileName)
         {

@@ -44,12 +44,28 @@ namespace DbManager.Security
 
         public bool RevokePrivilege(string table, Privilege privilege)
         {
-            //TODO DEADLINE 5: Revoke this privilege on this table. Return false if there is an error, true otherwise
-            
-            return false;
-            
-        }
+            //datos no válidos
+            if (table == null || privilege == null)
+            {
+                return false;
+            }
+            //tabla no existe
+            if (!PrivilegesOn.ContainsKey(table))
+            {
+                return false;
+            }
 
+            //tabla no tiene privilegio
+            if (!PrivilegesOn[table].Contains(privilege))
+            {
+                return false;
+            }
+
+            //tabla tiene privilegios, quitamos
+            PrivilegesOn[table].Remove(privilege);
+            return true;
+        }
+         
         public bool IsGrantedPrivilege(string table, Privilege privilege)
         {
             //TODO DEADLINE 5: Return whether this profile is granted this privilege on this table
