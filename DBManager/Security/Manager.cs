@@ -90,7 +90,8 @@ namespace DbManager.Security
                 return;
             }
 
-            if (IsUserAdmin()){
+            if (IsUserAdmin())
+            {
 
                 Profile profile = ProfileByName(profileName);
                 
