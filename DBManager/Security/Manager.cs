@@ -105,9 +105,24 @@ namespace DbManager.Security
         public bool IsGrantedPrivilege(string username, string table, Privilege privilege)
         {
             //TODO DEADLINE 5: Return true if the username has this privilege on this table. False otherwise (also in case of error)
-            
-            return false;
-            
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(table) || privilege == null)
+            {
+                return false;
+            }
+
+            Profile profile = ProfileByUser(username);
+
+            if (profile == null)
+            {
+                return false;
+            }
+
+            if (profile.Name == Profile.AdminProfileName)
+            {
+                return true;
+            }
+
+            return profile.IsGrantedPrivilege(table, privilege);
         }
 
         public void AddProfile(Profile profile)
@@ -236,7 +251,55 @@ namespace DbManager.Security
         public void Save(string databaseName)
         {
             //TODO DEADLINE 5: Save all the profiles and users/passwords created for this database.
-            
+            try
+            {
+                string managerDir = Path.Combine(databaseName, "managerData");
+
+                if (Directory.Exists(managerDir))
+                {
+                    //Borra datos antiguos
+                    Directory.Delete(managerDir, true);
+                }
+
+                Directory.CreateDirectory(managerDir);
+
+                int index = 1;
+                foreach (Profile profile in Profiles)
+                {
+                    string profileFolder = Path.Combine(managerDir, index.ToString());
+                    Directory.CreateDirectory(profileFolder);
+
+                    string profileFile = Path.Combine(profileFolder, profile.Name + ".txt");
+
+                    using (StreamWriter writer = new StreamWriter(profileFile))
+                    {
+                        //Guarda el nombre del perfil
+                        writer.WriteLine(profile.Name);
+
+                        //Guarda los usuarios
+                        foreach (User user in profile.Users)
+                        {
+                            writer.WriteLine($"USER:{user.Username},{user.EncryptedPassword}");
+                        }
+
+                        //Guarda los privilegios
+                        foreach (var tablePrivileges in profile.PrivilegesOn)
+                        {
+                            string table = tablePrivileges.Key;
+                            foreach (Privilege privilege in tablePrivileges.Value)
+                            {
+                                writer.WriteLine($"PRIV:{table},{privilege}");
+                            }
+                        }
+                    }
+
+                    index++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during save: " + ex.Message);
+            }
         }
     }
 }
