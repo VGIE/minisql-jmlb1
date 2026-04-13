@@ -22,7 +22,7 @@ namespace DbManager.Security
         {
             //TODO DEADLINE 5: Return true if the user logged-in (m_username) is the admin, false otherwise
             Profile profile = ProfileByUser(m_username);
-            return profile != null && profile.Name == "Admin" ;
+            return profile != null && profile.Name == "Admin";
 
         }
 
@@ -44,39 +44,39 @@ namespace DbManager.Security
                         if (Profiles[i].Users[j].Username == username &&
                             Profiles[i].Users[j].EncryptedPassword == encrypted)
                         {
-                            return true;  
+                            return true;
                         }
                     }
                 }
             }
             return false;
-            
+
         }
 
         public void GrantPrivilege(string profileName, string table, Privilege privilege)
         {
             //TODO DEADLINE 5: Add this privilege on this table to the profile with this name
             //If the profile or the table don't exist, do nothing
-            
+
             //comprobamos que el usuario es admin ********
-            if(!IsUserAdmin())
+            if (!IsUserAdmin())
             {
                 //si no lo es devuelve vacio
                 return;
             }
             //comprobar que la tabla y el usuario existen
-            if(profileName == null || table == null)
+            if (profileName == null || table == null)
             {
                 return;
             }
 
             //buscamos el perfil
             Profile profile = ProfileByName(profileName);
-            if(profile != null) 
+            if (profile != null)
             {
-            
-              profile.GrantPrivilege(table, privilege);
-                
+
+                profile.GrantPrivilege(table, privilege);
+
             }
         }
 
@@ -90,11 +90,12 @@ namespace DbManager.Security
                 return;
             }
 
-            if (IsUserAdmin()){
+            if (IsUserAdmin())
+            {
 
                 Profile profile = ProfileByName(profileName);
-                
-                if(profile != null)
+
+                if (profile != null)
                 {
                     profile.RevokePrivilege(table, privilege);
                 }
@@ -129,16 +130,16 @@ namespace DbManager.Security
             //TODO DEADLINE 5: Add this profile
 
             //si es administrados puede añadir perfiles
-            if(IsUserAdmin())
+            if (IsUserAdmin())
             {
                 //comprobar que el perfil no es nulo y que no esta ya añadido
-                if(profile != null && !Profiles.Contains(profile))
+                if (profile != null && !Profiles.Contains(profile))
                 {
                     Profiles.Add(profile);
                 }
             }
             //si no es administrados no hace nada
-                        
+
         }
 
         public User UserByName(string username)
@@ -170,20 +171,20 @@ namespace DbManager.Security
             //TODO DEADLINE 5: Return the profile by name. If it doesn't exist, return null
 
             //comprobar que el nombre no sea nulo
-            if(profileName == null)
+            if (profileName == null)
             {
                 return null;
             }
             foreach (Profile p in Profiles)
             {
-                if(p.Name == profileName)
+                if (p.Name == profileName)
                 {
                     return p;
                 }
             }
 
-                return null;
-            
+            return null;
+
         }
 
         public Profile ProfileByUser(string username)
@@ -194,9 +195,9 @@ namespace DbManager.Security
             {
                 return null;
             }
-            foreach(var profile in Profiles)
+            foreach (var profile in Profiles)
             {
-                foreach(var user in profile.Users)
+                foreach (var user in profile.Users)
                 {
                     if (user.Username == username)
                     {
@@ -215,89 +216,77 @@ namespace DbManager.Security
             //si no es administrados no puede eliminar
             if (!IsUserAdmin())
             {
-                       
+
                 return false;
             }
 
             //no se puede eliminar a si mismo 
-            if(profileName == Profile.AdminProfileName)
+            if (profileName == Profile.AdminProfileName)
             {
                 return false;
             }
 
             //buscamos el perfil
             var perfil = ProfileByName(profileName);
-            
+
             //comprobar que no sea nula
-            if(perfil != null && Profiles.Contains(perfil))
+            if (perfil != null && Profiles.Contains(perfil))
             {
                 return Profiles.Remove(perfil);
 
             }
 
             return false;
-                
+
         }
 
         public static Manager Load(string databaseName, string username)
         {
             //TODO DEADLINE 5: Load all the profiles and users saved for this database. The Manager instance should be created with the given username
-            
+
             return null;
-            
+
         }
 
         public void Save(string databaseName)
         {
             //TODO DEADLINE 5: Save all the profiles and users/passwords created for this database.
-            try
+            string managerDir = Path.Combine(databaseName, "managerData");
+
+            if (Directory.Exists(managerDir))
             {
-                string managerDir = Path.Combine(databaseName, "managerData");
+                Directory.Delete(managerDir, true);
+            }
 
-                if (Directory.Exists(managerDir))
+            Directory.CreateDirectory(managerDir);
+
+            int index = 1;
+            foreach (Profile profile in Profiles)
+            {
+                string profileFolder = Path.Combine(managerDir, index.ToString());
+                Directory.CreateDirectory(profileFolder);
+
+                string profileFile = Path.Combine(profileFolder, profile.Name + ".txt");
+
+                using (StreamWriter writer = new StreamWriter(profileFile))
                 {
-                    //Borra datos antiguos
-                    Directory.Delete(managerDir, true);
-                }
+                    writer.WriteLine(profile.Name);
 
-                Directory.CreateDirectory(managerDir);
-
-                int index = 1;
-                foreach (Profile profile in Profiles)
-                {
-                    string profileFolder = Path.Combine(managerDir, index.ToString());
-                    Directory.CreateDirectory(profileFolder);
-
-                    string profileFile = Path.Combine(profileFolder, profile.Name + ".txt");
-
-                    using (StreamWriter writer = new StreamWriter(profileFile))
+                    foreach (User user in profile.Users)
                     {
-                        //Guarda el nombre del perfil
-                        writer.WriteLine(profile.Name);
-
-                        //Guarda los usuarios
-                        foreach (User user in profile.Users)
-                        {
-                            writer.WriteLine($"USER:{user.Username},{user.EncryptedPassword}");
-                        }
-
-                        //Guarda los privilegios
-                        foreach (var tablePrivileges in profile.PrivilegesOn)
-                        {
-                            string table = tablePrivileges.Key;
-                            foreach (Privilege privilege in tablePrivileges.Value)
-                            {
-                                writer.WriteLine($"PRIV:{table},{privilege}");
-                            }
-                        }
+                        writer.WriteLine($"USER:{user.Username},{user.EncryptedPassword}");
                     }
 
-                    index++;
+                    foreach (var tablePrivileges in profile.PrivilegesOn)
+                    {
+                        string table = tablePrivileges.Key;
+                        foreach (Privilege privilege in tablePrivileges.Value)
+                        {
+                            writer.WriteLine($"PRIV:{table},{privilege}");
+                        }
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error during save: " + ex.Message);
+                index++;
             }
         }
     }
