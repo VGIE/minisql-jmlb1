@@ -32,7 +32,7 @@ namespace DbManager
             //El nombre de la tabla no existe
             Table t = database.TableByName(Table);
 
-            if (t != null)
+            if (t == null)
             {
                 return Constants.TableDoesNotExistError;
             }
@@ -57,11 +57,14 @@ namespace DbManager
                 }
             }
 
-            if (database.Select(Table, Columns, Where) == null)
+            Table table = database.Select(Table, Columns, Where);
+
+            if (table == null)
             {
                 return Constants.Error;
             }
-            return Table.ToString();
+
+            return table.ToString();
         }
     }
 }
