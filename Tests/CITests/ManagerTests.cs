@@ -139,5 +139,12 @@ namespace SecurityParsingTests
             Assert.Equal("Prueba2", manager.Profiles[2].Name);
 
         }
+
+
+        [Fact]
+        public void TestRemoveProfile()
+        {
+
+        }
     }
 }
