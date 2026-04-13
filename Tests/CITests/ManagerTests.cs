@@ -112,5 +112,32 @@ namespace SecurityParsingTests
             Assert.Null(result4);
         }
 
+        [Fact]
+        public void TestAddProfile()
+        {
+            Manager manager = new Manager("admin");
+
+            Profile adminProfile = new Profile { Name = "Admin" };
+
+            User adminUser = new User("admin", "password");
+            //añadimos el profil
+            adminProfile.Users.Add(adminUser);
+            manager.Profiles.Add(adminProfile);
+
+            Profile profile1 = new Profile { Name = "Prueba" };
+            manager.AddProfile(profile1);
+
+            //ahora deberia haber 2 el admin y el prueba
+            Assert.Equal(2, manager.Profiles.Count);
+            //comprobamos tambien el nombre del pefrfil añadido, en la posicion 0
+            Assert.Equal("Prueba", manager.Profiles[1].Name);
+
+            //probamos para un nuevo perfil
+            Profile prof2 = new Profile { Name = "Prueba2" };
+            manager.AddProfile(prof2);
+            Assert.Equal(3, manager.Profiles.Count);
+            Assert.Equal("Prueba2", manager.Profiles[2].Name);
+
+        }
     }
 }

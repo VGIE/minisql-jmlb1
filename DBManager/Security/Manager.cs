@@ -22,7 +22,7 @@ namespace DbManager.Security
         {
             //TODO DEADLINE 5: Return true if the user logged-in (m_username) is the admin, false otherwise
             Profile profile = ProfileByUser(m_username);
-            return profile.Name == "Admin" && profile != null;
+            return profile != null && profile.Name == "Admin" ;
 
         }
 
@@ -153,8 +153,21 @@ namespace DbManager.Security
         public Profile ProfileByName(string profileName)
         {
             //TODO DEADLINE 5: Return the profile by name. If it doesn't exist, return null
-            
-            return null;
+
+            //comprobar que el nombre no sea nulo
+            if(profileName == null)
+            {
+                return null;
+            }
+            foreach (Profile p in Profiles)
+            {
+                if(p.Name == profileName)
+                {
+                    return p;
+                }
+            }
+
+                return null;
             
         }
 
