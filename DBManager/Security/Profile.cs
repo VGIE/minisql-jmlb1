@@ -69,8 +69,19 @@ namespace DbManager.Security
         public bool IsGrantedPrivilege(string table, Privilege privilege)
         {
             //TODO DEADLINE 5: Return whether this profile is granted this privilege on this table
-            
-            return false;
+            if (table == null || privilege == null)
+            {
+                return false;
+            }
+            if (PrivilegesOn.ContainsKey(table))
+            {
+                return PrivilegesOn[table].Contains(privilege);
+
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
