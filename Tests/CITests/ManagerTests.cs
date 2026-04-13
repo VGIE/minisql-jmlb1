@@ -14,9 +14,9 @@ namespace SecurityParsingTests
         [Fact]
         public void TestAdminTrue()
         {
-            Manager manager = new Manager("admin");
+            Manager manager = new Manager("admin1");
             Profile profile = new Profile { Name = "Admin" };
-            User user = new User("admin", "pass");
+            User user = new User("admin1", "pass");
             profile.Users.Add(user);
             manager.Profiles.Add(profile);
             bool result = manager.IsUserAdmin();
