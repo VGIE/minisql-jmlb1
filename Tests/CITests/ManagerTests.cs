@@ -144,6 +144,47 @@ namespace SecurityParsingTests
         [Fact]
         public void TestRemoveProfile()
         {
+            
+
+            Manager noAdmin = new Manager("NoAdmin");
+            //perfil que vamos a elimianr
+            Profile prof = new Profile { Name = "prueba" };
+            noAdmin.Profiles.Add(prof);
+
+            //probar que si no eres admnisitrados no puedes eliminar usuarios
+            Assert.False(noAdmin.RemoveProfile("prueba"));
+            //el perfil tiene que seguir estando
+            Assert.Contains(prof, noAdmin.Profiles);
+
+
+
+            //creamos el administrados
+            Manager admin = new Manager("Admin");
+
+            Profile adminProf = new Profile { Name = "Admin" };
+            User adminUser = new User {Username = "Admin"};
+            adminProf.Users.Add(adminUser);
+            admin.Profiles.Add(adminProf);
+
+            //probar que un administrados no puede borra un pefil que no existe
+            Assert.False(admin.RemoveProfile("noExiste"));
+
+
+            //comprobar que no puedes borrar admins
+            Assert.False(admin.RemoveProfile(Profile.AdminProfileName));
+            //comprobamos que tiene que seguir estando
+            Assert.Contains(adminProf, admin.Profiles);
+
+
+            //comporbamos que si puede eliminar perfiles si es admi
+            Profile prof2 = new Profile { Name = "prueba2" };
+            admin.Profiles.Add(prof2);
+            Assert.True(admin.RemoveProfile("prueba2"));
+            //ya no debería estar
+            Assert.DoesNotContain(prof2, admin.Profiles);
+
+                      
+                   
 
         }
     }
