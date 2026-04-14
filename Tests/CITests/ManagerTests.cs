@@ -183,8 +183,26 @@ namespace SecurityParsingTests
             //ya no debería estar
             Assert.DoesNotContain(prof2, admin.Profiles);
 
-                      
-                   
+
+        }
+
+        [Fact]
+        public void testProfileByName()
+        {
+            Manager manager = new Manager("Manager");
+
+            //perfil de prueba
+            Profile profile = new Profile { Name = "PerfilPrueba" };
+            manager.Profiles.Add(profile);
+
+            //probar que si existe el nombre del perfil lo devuelva
+            Profile profExiste = manager.ProfileByName("PerfilPrueba");
+            Assert.NotNull(profExiste);
+            Assert.Equal("PerfilPrueba", profExiste.Name);
+
+            //probar que si el perfil no existe devuelva null
+            Profile perfilNoExiste = manager.ProfileByName("NoExiste");
+            Assert.Null(perfilNoExiste);
 
         }
     }
