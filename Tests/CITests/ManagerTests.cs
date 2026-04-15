@@ -205,5 +205,41 @@ namespace SecurityParsingTests
             Assert.Null(perfilNoExiste);
 
         }
+
+        [Fact]
+        public void testGrantPrivilege()
+        {
+            Manager manager = new Manager("Admin");
+
+
+            Profile adminProf = new Profile { Name = "Admin" };
+            User admin = new User("Admin", "password");
+
+            adminProf.Users.Add(admin);
+            manager.Profiles.Add(adminProf);
+
+
+            //perfil para probar privilegios
+            Profile profile = new Profile { Name = "Editor" };
+
+            //usuarios de prueba
+            User user = new User("Jon", "password");
+            User user2 = new User("Ane", "password");
+
+            profile.Users.Add(user);
+            profile.Users.Add(user2);
+
+            manager.Profiles.Add(profile);
+
+            //damos el privilegio de modificar a la tabla Users
+            manager.GrantPrivilege("Editor", "Users", Privilege.Update);
+            //comprobar que se ha dado el privilegio
+            Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Update));
+
+            manager.GrantPrivilege("Editor", "Users", Privilege.Select);
+
+            Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Select));
+
+        }
     }
 }
