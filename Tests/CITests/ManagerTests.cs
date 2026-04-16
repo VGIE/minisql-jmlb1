@@ -138,14 +138,46 @@ namespace SecurityParsingTests
             Assert.Equal(3, manager.Profiles.Count);
             Assert.Equal("Prueba2", manager.Profiles[2].Name);
 
+        }   
+
+        [Fact]
+        public void AddProfile_ShouldNotAddDuplicate()
+        {
+            Manager manager = new Manager("adminUser");
+
+            Profile adminProfile = new Profile();
+            adminProfile.Name = Profile.AdminProfileName;
+            adminProfile.Users.Add(new User("adminUser", "adminPass"));
+
+            
+            manager.Profiles.Add(adminProfile);
+
+            
+            Profile profile1 = new Profile();
+            profile1.Name = "SameName";
+
+            Profile profile2 = new Profile();
+            profile2.Name = "SameName";
+
+            manager.AddProfile(profile1);
+            manager.AddProfile(profile2); 
+
+            
+            int count = 0;
+            foreach (Profile profile in manager.Profiles)
+            {
+                if (profile.Name == "SameName")
+                {
+                    count++;
+                }
+            }
+            Assert.Equal(1, count);
         }
 
 
         [Fact]
         public void TestRemoveProfile()
         {
-            
-
             Manager noAdmin = new Manager("NoAdmin");
             //perfil que vamos a elimianr
             Profile prof = new Profile { Name = "prueba" };
@@ -156,13 +188,11 @@ namespace SecurityParsingTests
             //el perfil tiene que seguir estando
             Assert.Contains(prof, noAdmin.Profiles);
 
-
-
             //creamos el administrados
             Manager admin = new Manager("Admin");
 
             Profile adminProf = new Profile { Name = "Admin" };
-            User adminUser = new User {Username = "Admin"};
+            User adminUser = new User { Username = "Admin" };
             adminProf.Users.Add(adminUser);
             admin.Profiles.Add(adminProf);
 
@@ -182,7 +212,6 @@ namespace SecurityParsingTests
             Assert.True(admin.RemoveProfile("prueba2"));
             //ya no debería estar
             Assert.DoesNotContain(prof2, admin.Profiles);
-
 
         }
 
@@ -241,5 +270,57 @@ namespace SecurityParsingTests
             Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Select));
 
         }
+
+      
+        //IsGrantedPrivilege
+        [Fact]
+        public void testIsGrantedPrivilege()
+        {
+            Manager manager = new Manager("adminUser");
+
+            Profile adminProfile = new Profile();
+            adminProfile.Name = Profile.AdminProfileName;
+            adminProfile.Users.Add(new User("adminUser", "adminPass"));
+            manager.Profiles.Add(adminProfile);
+
+            Profile profile = new Profile();
+            profile.Name = "TestProfile";
+
+            User user = new User("user1", "pass");
+            profile.Users.Add(user);
+            profile.GrantPrivilege("Customers", Privilege.Select);
+
+            manager.AddProfile(profile);
+
+            bool hasPrivilege = manager.IsGrantedPrivilege("user1", "Customers", Privilege.Select);
+            Assert.True(hasPrivilege);
+        }
+
+        [Fact]
+        public void testIsGrantedPrivilege1()
+        {
+            Manager manager = new Manager("adminUser");
+
+            bool hasPrivilege = manager.IsGrantedPrivilege("ghostUser", "Orders", Privilege.Select);
+            Assert.False(hasPrivilege);
+        }
+
+        [Fact]
+        public void testIsGrantedPrivilege2()
+        {
+            Manager manager = new Manager("adminUser");
+
+            Profile profile = new Profile();
+            profile.Name = "TestProfile";
+
+            User user = new User("user2", "pass");
+            profile.Users.Add(user);
+
+            manager.AddProfile(profile);
+
+            bool hasPrivilege = manager.IsGrantedPrivilege("user2", "Orders", Privilege.Delete);
+            Assert.False(hasPrivilege);
+        }
+
     }
 }

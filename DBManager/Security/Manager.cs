@@ -133,13 +133,14 @@ namespace DbManager.Security
             if (IsUserAdmin())
             {
                 //comprobar que el perfil no es nulo y que no esta ya añadido
-                if (profile != null && !Profiles.Contains(profile))
+                if (profile != null && ProfileByName(profile.Name) == null)
                 {
                     Profiles.Add(profile);
                 }
             }
-            //si no es administrados no hace nada
+            if (!IsUserAdmin()) return;
 
+            //si no es administrados no hace nada
         }
 
         public User UserByName(string username)
