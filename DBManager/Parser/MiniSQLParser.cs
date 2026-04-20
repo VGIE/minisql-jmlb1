@@ -113,6 +113,9 @@ namespace DbManager
             }
 
 
+            const string Int_Type = "INT";
+            const string Text_Type = "TEXT";
+            const string Double_Type = "DOUBLE";
 
             //create table
             Match createMatch = Regex.Match(miniSQLQuery, createTablePattern);
@@ -141,15 +144,15 @@ namespace DbManager
                             string tipo = columna[1].Trim().ToUpper();
 
                             ColumnDefinition.DataType columnType;
-                            if (tipo == "INT")
+                            if (tipo == Int_Type)
                             {
                                 columnType = ColumnDefinition.DataType.Int;
                             }
-                            else if (tipo == "TEXT")
+                            else if (tipo == Text_Type)
                             {
                                 columnType = ColumnDefinition.DataType.String;
                             }
-                            else if (tipo == "DOUBLE")
+                            else if (tipo == Double_Type)
                             {
                                 columnType = ColumnDefinition.DataType.Double;
                             }
