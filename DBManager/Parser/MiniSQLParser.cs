@@ -1,4 +1,5 @@
 using DbManager.Parser;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -23,7 +24,7 @@ namespace DbManager
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
-            const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
+            const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)";
             //LEIRE --> #26
             const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
 
@@ -109,40 +110,39 @@ namespace DbManager
             //create table
             Match createMatch = Regex.Match(miniSQLQuery, createTablePattern);
 
-            //CREATE TABLE válido
             if (createMatch.Success)
             {
                 string nombreTabla = createMatch.Groups[1].Value;
-                string columnas = createMatch.Groups[2].Value;
+                string columnasText = createMatch.Groups[2].Value;
 
-                //lista para guardar las columnas
                 List<ColumnDefinition> crearColumnas = new List<ColumnDefinition>();
 
-                if (!string.IsNullOrWhiteSpace(columnas))
+                if (!string.IsNullOrWhiteSpace(columnasText))
                 {
-                    //separamos las distintas columnas
-                    string[] columnaSep = Regex.Split(columnas, ","); 
+                    // Dividir por comas
+                    string[] columnaSep = columnasText.Split(',');
 
-                    //para cada columnas
                     foreach (string parte in columnaSep)
                     {
-                        //separar nombre y tipo
-                        string[] columna = Regex.Split(parte, @"\s+");
+                        string parteTrim = parte.Trim();
+                        // Dividir por espacio
+                        string[] columna = parteTrim.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
                         if (columna.Length == 2)
                         {
-                            string name = columna[0];
-                            string tipo = columna[1];
+                            string name = columna[0].Trim();
+                            string tipo = columna[1].Trim().ToUpper();
 
                             ColumnDefinition.DataType columnType;
-                            if (tipo.Equals("INT"))
+                            if (tipo == "INT")
                             {
                                 columnType = ColumnDefinition.DataType.Int;
                             }
-                            else if (tipo.Equals("TEXT"))
+                            else if (tipo == "TEXT")
                             {
                                 columnType = ColumnDefinition.DataType.String;
                             }
-                            else if (tipo.Equals("DOUBLE"))
+                            else if (tipo == "DOUBLE")
                             {
                                 columnType = ColumnDefinition.DataType.Double;
                             }
