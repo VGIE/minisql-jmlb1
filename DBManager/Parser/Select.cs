@@ -49,7 +49,7 @@ namespace DbManager
             {
                 return Constants.Error;
             }
-
+            return Constants.Error;
         }
     }
 }
