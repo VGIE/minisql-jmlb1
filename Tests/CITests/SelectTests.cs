@@ -59,7 +59,7 @@ namespace SecurityParsingTests
         public void TestCreateTableOnly()
         {
             Database db = new Database("admin", "admin");
-            string result = db.ExecuteMiniSQLQuery("CREATE TABLE users (name TEXT, age INT)");
+            string result = db.ExecuteMiniSQLQuery("CREATE TABLE users (name TEXT,age INT)");
             Assert.Equal(Constants.CreateTableSuccess, result);
         }
 
@@ -68,7 +68,7 @@ namespace SecurityParsingTests
         {
             Database db = new Database("admin", "admin");
 
-            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT, edad INT)");
+            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT,edad INT)");
 
             Table table = db.TableByName("users");
             Assert.NotNull(table);
@@ -92,7 +92,7 @@ namespace SecurityParsingTests
         {
             Database db = new Database("admin", "admin");
 
-            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT, edad INT)");
+            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT,edad INT)");
 
             db.ExecuteMiniSQLQuery("INSERT INTO users VALUES ('Markel','20')");
 
