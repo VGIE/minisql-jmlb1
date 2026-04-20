@@ -188,19 +188,19 @@ namespace OurTests
 
             //tabla sin filas
             string resultadoVacio = tabla.ToString();
-            Assert.Equal("['Name','Height','Age']", resultadoVacio);
+            Assert.Equal("[Name,Height,Age]", resultadoVacio);
 
             //una fila
             tabla.AddRow(new Row(columnas, new List<string>() { "Juan", "1.75", "30" }));
             string resultadoUnaFila = tabla.ToString();
-            Assert.Equal("['Name','Height','Age']{'Juan','1.75','30'}", resultadoUnaFila);
+            Assert.Equal("[Name,Height,Age]{'Juan','1.75','30'}", resultadoUnaFila);
 
             //con más filas
             tabla.AddRow(new Row(columnas, new List<string>() { "Ana", "1.65", "25" }));
             tabla.AddRow(new Row(columnas, new List<string>() { "Luis", "1.80", "35" }));
 
             string resultadoTresFilas = tabla.ToString();
-            Assert.Equal("['Name','Height','Age']{'Juan','1.75','30'}{'Ana','1.65','25'}{'Luis','1.80','35'}", resultadoTresFilas);
+            Assert.Equal("[Name,Height,Age]{'Juan','1.75','30'}{'Ana','1.65','25'}{'Luis','1.80','35'}", resultadoTresFilas);
 
             //tabla sin columnas
             List<ColumnDefinition> sinColumnas = new List<ColumnDefinition>();

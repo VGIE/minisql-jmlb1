@@ -70,5 +70,18 @@ namespace SecurityParsingTests
             Assert.Null(op14);
 
         }
+
+        [Fact]
+        public void SpacesTest()
+        {
+            CreateTable op15 = MiniSQLParser.Parse("CREATE TABLE User (NAME TEXT , AGE INT)") as CreateTable;
+            Assert.Null(op15);
+
+            CreateTable op16 = MiniSQLParser.Parse("CREATE TABLE User (NAME TEXT ,AGE INT)") as CreateTable;
+            Assert.Null(op16);
+
+            CreateTable op17= MiniSQLParser.Parse("CREATE TABLE User (NAME TEXT, AGE INT)") as CreateTable;
+            Assert.Null(op17);
+        }
     }
 }
