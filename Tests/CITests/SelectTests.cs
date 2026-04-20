@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,6 +12,190 @@ namespace SecurityParsingTests
 {
     public class SelectTests
     {
+        //test de pruebas para encontrar el error
+        [Fact]
+        public void TestDebugManualSelect()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>();
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.String, "nombre"));
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.Int, "edad"));
+            db.CreateTable("users", columns);
+
+            List<string> values = new List<string>();
+            values.Add("Markel");
+            values.Add("20");
+            db.Insert("users", values);
+
+            List<string> selectCols = new List<string>();
+            selectCols.Add("nombre");
+            selectCols.Add("edad");
+            Select select = new Select("users", selectCols, null);
+
+            string result = select.Execute(db);
+
+            Assert.Contains("Markel", result);
+        }
+        [Fact]
+        public void TestCreateTablePattern()
+        {
+            string query = "CREATE TABLE users (Nombre TEXT, Edad INT)";
+            Match match = Regex.Match(query, @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)");
+
+            Assert.True(match.Success);
+            Assert.Equal("users", match.Groups[1].Value);
+            Assert.Equal("Nombre TEXT, Edad INT", match.Groups[2].Value);
+        }
+        [Fact]
+        public void TestCreateTableOnly()
+        {
+            Database db = new Database("admin", "admin");
+            string result = db.ExecuteMiniSQLQuery("CREATE TABLE users (name TEXT, age INT)");
+            Assert.Equal(Constants.CreateTableSuccess, result);
+        }
+
+        [Fact]
+        public void TestDebugColumnExists()
+        {
+            Database db = new Database("admin", "admin");
+
+            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT, edad INT)");
+
+            Table table = db.TableByName("users");
+            Assert.NotNull(table);
+
+            int numCols = table.NumColumns();
+            Assert.Equal(2, numCols);
+
+            // Verificar los nombres de las columnas
+            ColumnDefinition col1 = table.GetColumn(0);
+            ColumnDefinition col2 = table.GetColumn(1);
+
+            Assert.NotNull(col1);
+            Assert.NotNull(col2);
+
+            // Verificar ColumnByName
+            ColumnDefinition found = table.ColumnByName("nombre");
+            Assert.NotNull(found);
+        }
+        [Fact]
+        public void TestDebugDatabaseSelect()
+        {
+            Database db = new Database("admin", "admin");
+
+            db.ExecuteMiniSQLQuery("CREATE TABLE users (nombre TEXT, edad INT)");
+
+            db.ExecuteMiniSQLQuery("INSERT INTO users VALUES ('Markel','20')");
+
+            List<string> columns = new List<string>();
+            columns.Add("nombre");
+            columns.Add("edad");
+
+            Table result = db.Select("users", columns, null);
+
+            Assert.NotNull(result);
+
+            string resultString = result.ToString();
+            Assert.Contains("Markel", resultString);
+        }
+
+        [Fact]
+        public void TestDebugSelectParsing()
+        {
+            string query = "SELECT nombre,edad FROM users";
+            MiniSqlQuery result = MiniSQLParser.Parse(query);
+
+            Assert.NotNull(result);
+            Select select = result as Select;
+            Assert.NotNull(select);
+            Assert.Equal(2, select.Columns.Count);
+            Assert.Equal("nombre", select.Columns[0]);
+            Assert.Equal("edad", select.Columns[1]);
+        }
+
+        [Fact]
+        public void TestSimpleSelectExecute()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>();
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"));
+            db.CreateTable("users", columns);
+
+            List<string> values = new List<string>();
+            values.Add("Markel");
+            db.Insert("users", values);
+
+            List<string> selectCols = new List<string>();
+            selectCols.Add("Nombre");
+            Select select = new Select("users", selectCols, null);
+
+            string result = select.Execute(db);
+
+            Assert.NotNull(result);
+        }
+        [Fact]
+        public void TestSelectEmptyTable()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>();
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"));
+            db.CreateTable("users", columns);
+
+            //tabla vacía
+
+            List<string> selectCols = new List<string>();
+            selectCols.Add("Nombre");
+            Select select = new Select("users", selectCols, null);
+
+            string result = select.Execute(db);
+
+            Assert.NotNull(result);
+        }
+        [Fact]
+        public void TestSelectWithWhere()
+        {
+            Database db = new Database("admin", "admin");
+
+            List<ColumnDefinition> columns = new List<ColumnDefinition>();
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.String, "Nombre"));
+            columns.Add(new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad"));
+            db.CreateTable("users", columns);
+
+            List<string> values = new List<string>();
+            values.Add("Markel");
+            values.Add("20");
+            db.Insert("users", values);
+
+            List<string> selectCols = new List<string>();
+            selectCols.Add("Nombre");
+            selectCols.Add("Edad");
+
+            Condition condition = new Condition("Edad", ">", "18");
+            Select select = new Select("users", selectCols, condition);
+
+            string result = select.Execute(db);
+
+            Assert.NotNull(result);
+            Assert.Contains("Markel", result);
+            Assert.Contains("20", result);
+        }
+
+        [Fact]
+        public void TestFullSelect()
+        {
+            Database db = new Database("admin", "admin");
+
+            db.ExecuteMiniSQLQuery("CREATE TABLE users (Nombre TEXT, Edad INT)");
+            db.ExecuteMiniSQLQuery("INSERT INTO users VALUES ('Markel','20')");
+
+            string result = db.ExecuteMiniSQLQuery("SELECT Nombre,Edad FROM users");
+
+            Assert.NotNull(result);
+        }
+
         [Fact]
 
         public void validSelects()
