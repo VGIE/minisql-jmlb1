@@ -58,32 +58,40 @@ namespace DbManager
                 return new DropTable(tableName);
             }
 
-         
+
             //Select
+            //select
             Match matchSelect = Regex.Match(miniSQLQuery, selectPattern);
+
             if (matchSelect.Success)
             {
-                //Colmunas del select
-                string columnas = matchSelect.Groups[1].Value;
+                string column = matchSelect.Groups[1].Value;
+                //Separar las columas
+                List<string> columns = CommaSeparatedNames(column);
+
                 string table = matchSelect.Groups[2].Value;
-                //Condicion del select
-                string columna = matchSelect.Groups[3].Value;
-                // Simbolo y comparando por ejemplo:
-                // simbolo = "<"
-                //comparando = "28"
-                string simbolo = matchSelect.Groups[4].Value;
-                string comparando = matchSelect.Groups[5].Value;
-                comparando = comparando.Trim('\'');
 
-                //Nombre de las columnas
-                List<string> columns = CommaSeparatedNames(columnas);
+                Condition cond = null;
 
+                //si hay where
+                if (matchSelect.Groups[3].Success) 
+                {
+                    string colum = matchSelect.Groups[3].Value;
+                    string op = matchSelect.Groups[4].Value;
+                    string valor = matchSelect.Groups[5].Value;
 
-                Condition condition = new Condition(columna, simbolo, comparando);
-                Select select = new Select(table, columns, condition);
-
-                return select;
+                    cond = new Condition(colum, op, valor);
+                }
+                if (cond != null)
+                {
+                    return new Select(table, columns, cond);
+                }
+                else
+                {
+                    return new Select(table, columns, null);
+                }
             }
+
 
             //Insert
             Match matchInsert = Regex.Match(miniSQLQuery, insertPattern);

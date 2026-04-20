@@ -12,6 +12,14 @@ namespace SecurityParsingTests
 {
     public class SelectTests
     {
+        [Fact]
+        public void Execute()
+        {
+            Database database = new Database("user", "password");
+            database.ExecuteMiniSQLQuery("CREATE TABLE TestTable (Age INT,Name TEXT)");
+            Assert.Equal("['Age']", database.ExecuteMiniSQLQuery("SELECT Age FROM TestTable"));
+        }
+
         //test de pruebas para encontrar el error
         [Fact]
         public void TestDebugManualSelect()
