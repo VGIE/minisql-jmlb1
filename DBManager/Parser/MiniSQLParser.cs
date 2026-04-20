@@ -14,7 +14,6 @@ namespace DbManager
             //TODO DEADLINE 2
             const string selectPattern = @"^SELECT\s+([a-zA-Z0-9]+(?:,[a-zA-Z0-9]+)*)\s+FROM\s+([a-zA-Z0-9]+)(\s+WHERE\s+([a-zA-Z0-9]+(>|<|=)'((-[0-9]+(\.[0-9]+)?)|([0-9]+(\.[0-9]+)?)|([a-zA-Z0-9]+(?:\s[a-zA-Z0-9]+)*))'))?$";
 
-
             const string dropTablePattern = @"^DROP\s+TABLE\s+([a-zA-Z0-9]+)$";
 
 
@@ -24,7 +23,7 @@ namespace DbManager
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
-            const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)";
+            const string createTablePattern = @"^CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\(([a-zA-Z][a-zA-Z0-9]*\s+(?:INT|TEXT)(?:,[a-zA-Z][a-zA-Z0-9]*\s+(?:INT|TEXT))*)\)$";
             //LEIRE --> #26
             const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
 
