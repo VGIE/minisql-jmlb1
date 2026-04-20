@@ -19,14 +19,26 @@ namespace DbManager
 
         public string Execute(Database database)
         {
-            //TODO DEADLINE 3: Run the query and return the appropriate message
-            //InsertSuccess or the last error in the database
-            if(database.Insert(Table, Values))
+            // Verificar que database no es null
+            if (database == null)
+            {
+                return Constants.Error;
+            }
+
+            // Verificar que la tabla existe
+            Table t = database.TableByName(Table);
+            if (t == null)
+            {
+                return Constants.TableDoesNotExistError;
+            }
+
+            // Insertar (deja que database.Insert() valide el resto)
+            if (database.Insert(Table, Values))
             {
                 return Constants.InsertSuccess;
             }
+
             return database.LastErrorMessage;
-            
         }
     }
 }

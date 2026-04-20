@@ -11,6 +11,14 @@ namespace SecurityParsingTests
 {
     public class SelectTests
     {
+        /*[Fact]
+        public void Execute()
+        {
+            Database database = new Database("user", "password");
+            database.ExecuteMiniSQLQuery("CREATE TABLE TestTable (Age INT,Name TEXT)");
+            Assert.Equal("[Age]", database.ExecuteMiniSQLQuery("SELECT Age FROM TestTable"));
+        }*/
+
         [Fact]
 
         public void validSelects()
@@ -60,7 +68,7 @@ namespace SecurityParsingTests
 
         }
 
-        [Fact]
+            [Fact]
         
         public void invalidSelects()
         {

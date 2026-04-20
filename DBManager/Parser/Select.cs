@@ -29,6 +29,7 @@ namespace DbManager
             {
                 return Constants.Error;
             }
+
             //El nombre de la tabla no existe
             Table t = database.TableByName(Table);
 
@@ -58,7 +59,6 @@ namespace DbManager
             }
 
             Table table = database.Select(Table, Columns, Where);
-
             if (table == null)
             {
                 return Constants.Error;
