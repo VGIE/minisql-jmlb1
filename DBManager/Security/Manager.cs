@@ -243,10 +243,97 @@ namespace DbManager.Security
 
         public static Manager Load(string databaseName, string username)
         {
-            //TODO DEADLINE 5: Load all the profiles and users saved for this database. The Manager instance should be created with the given username
+            string managerDir = Path.Combine(databaseName, "managerData");
 
-            return null;
+            Manager manager = new Manager(username);
+            // Si no existe la carpeta, manager vacío
+            if (Directory.Exists(managerDir))
+            {
+                string[] folders = Directory.GetDirectories(managerDir);
 
+                foreach (string folder in folders)
+                {
+                    string[] files = Directory.GetFiles(folder, "*.txt");
+
+                    //Seguir solo si hay archivos en la carpeta
+                    if (files.Length > 0)
+                    {
+                        string[] lines = File.ReadAllLines(files[0]);
+
+                        //Seguir solo si el archivo no está vacío
+                        if (lines.Length > 0)
+                        {
+                            Profile profile = new Profile();
+
+                            int index = 0;
+
+                            foreach (string line in lines)
+                            {
+                                //La primera linea es el nombre de perfil, luego se actualiza el index
+                                if (index == 0)
+                                {
+                                    profile.Name = line;
+                                }
+                                else
+                                {
+                                    //Para usuarios 
+                                    if (line.StartsWith("USER:"))
+                                    {
+                                        string data = line.Substring(5);
+                                        //Separar user y password
+                                        string[] parts = data.Split(',');
+
+                                        //Para que el formato sea correcto tiene que tener exactamente las 2 partes
+                                        if (parts.Length == 2)
+                                        {
+                                            User user = new User();
+                                            user.Username = parts[0];
+                                            user.EncryptedPassword = parts[1];
+
+                                            profile.Users.Add(user);
+                                        }
+                                    }
+                                    //Para privilegios
+                                    else if (line.StartsWith("PRIV:"))
+                                    {
+                                        string data = line.Substring(5);
+                                        string[] parts = data.Split(',');
+
+                                        if (parts.Length == 2)
+                                        {
+                                            string text = parts[1];
+                                            //Privilege es un enumnerado, busca el privilegio
+                                            Privilege privilege = Privilege.Select;
+                                            bool found = false;
+
+                                            foreach (Privilege p in Enum.GetValues(typeof(Privilege)))
+                                            {
+                                                if (p.ToString() == text)
+                                                {
+                                                    privilege = p;
+                                                    found = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (found)
+                                            {
+                                                profile.GrantPrivilege(parts[0], privilege);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                index++;
+                            }
+                            //Añadir perfil a manager
+                            manager.Profiles.Add(profile);
+                        }
+                    }
+                }
+            }
+
+            return manager;
         }
 
         public void Save(string databaseName)

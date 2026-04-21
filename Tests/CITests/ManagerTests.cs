@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DbManager;
+using DbManager.Security;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using DbManager.Security;
-using DbManager;
 
 namespace SecurityParsingTests
 {
@@ -138,7 +139,7 @@ namespace SecurityParsingTests
             Assert.Equal(3, manager.Profiles.Count);
             Assert.Equal("Prueba2", manager.Profiles[2].Name);
 
-        }   
+        }
 
         [Fact]
         public void AddProfile_ShouldNotAddDuplicate()
@@ -149,10 +150,10 @@ namespace SecurityParsingTests
             adminProfile.Name = Profile.AdminProfileName;
             adminProfile.Users.Add(new User("adminUser", "adminPass"));
 
-            
+
             manager.Profiles.Add(adminProfile);
 
-            
+
             Profile profile1 = new Profile();
             profile1.Name = "SameName";
 
@@ -160,9 +161,9 @@ namespace SecurityParsingTests
             profile2.Name = "SameName";
 
             manager.AddProfile(profile1);
-            manager.AddProfile(profile2); 
+            manager.AddProfile(profile2);
 
-            
+
             int count = 0;
             foreach (Profile profile in manager.Profiles)
             {
@@ -271,7 +272,7 @@ namespace SecurityParsingTests
 
         }
 
-      
+
         //IsGrantedPrivilege
         [Fact]
         public void testIsGrantedPrivilege()
@@ -322,5 +323,94 @@ namespace SecurityParsingTests
             Assert.False(hasPrivilege);
         }
 
+        [Fact]
+        public void TestSave()
+        {
+            string dbName = "Test";
+
+            Manager manager = new Manager("admin");
+
+            Profile profile = new Profile();
+            profile.Name = "AdminProfile";
+
+            User user = new User();
+            user.Username = "john";
+            user.EncryptedPassword = Encryption.Encrypt("1234");
+
+            profile.Users.Add(user);
+
+            profile.GrantPrivilege("Users", Privilege.Select);
+
+            manager.Profiles.Add(profile);
+
+            manager.Save(dbName);
+
+            string dir = Path.Combine(dbName, "managerData");
+
+            Assert.True(Directory.Exists(dir));
+            Assert.True(Directory.GetDirectories(dir).Length > 0);
+        }
+
+        [Fact]
+        public void TestLoad()
+        {
+            string dbName = "Test";
+            string dir = Path.Combine(dbName, "managerData");
+
+            Directory.CreateDirectory(dir);
+            string profileDir = Path.Combine(dir, "1");
+            Directory.CreateDirectory(profileDir);
+
+            string filePath = Path.Combine(profileDir, "Admin.txt");
+
+            File.WriteAllLines(filePath, new string[] {"Admin", "USER:john,1234", "PRIV:Users,Select" });
+
+            Manager manager = Manager.Load(dbName, "admin");
+
+            Assert.NotNull(manager);
+            Assert.Single(manager.Profiles);
+
+            Profile profile = manager.ProfileByName("Admin");
+
+            Assert.NotNull(profile);
+            Assert.Single(profile.Users);
+            Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Select));
+        }
+
+        [Fact]
+        public void TestSaveAndLoad()
+        {
+            string dbName = "Test";
+
+            Manager manager = new Manager("admin");
+
+            Profile profile = new Profile();
+            profile.Name = "Editor";
+
+            User user = new User();
+            user.Username = "alice";
+            user.EncryptedPassword = Encryption.Encrypt("pass");
+
+            profile.Users.Add(user);
+
+            profile.GrantPrivilege("Customers", Privilege.Update);
+
+            manager.Profiles.Add(profile);
+
+            // Guardar
+            manager.Save(dbName);
+
+            // Cargar
+            Manager loaded = Manager.Load(dbName, "admin");
+
+            Assert.NotNull(loaded);
+
+            Profile loadedProfile = loaded.ProfileByUser("alice");
+
+            Assert.NotNull(loadedProfile);
+            Assert.Equal("Editor", loadedProfile.Name);
+
+            Assert.True(loadedProfile.IsGrantedPrivilege("Customers", Privilege.Update));
+        }
     }
 }
