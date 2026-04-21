@@ -24,11 +24,11 @@ namespace DbManager
         {
             //TODO DEADLINE 3: Run the query and return the table as a string (or the last error in the database)
 
+            //No existe database
             if (database == null)
             {
                 return Constants.Error;
             }
-
             //El nombre de la tabla no existe
             Table t = database.TableByName(Table);
 
@@ -37,19 +37,34 @@ namespace DbManager
                 return Constants.TableDoesNotExistError;
             }
 
-            Table result = database.Select(Table, Columns, Where);
-
-            if (result != null)
+            //No existe el nombre de la columna
+            foreach (string col in Columns)
             {
-                return result.ToString();
+                if (t.ColumnByName(col) == null)
+                {
+                    return Constants.ColumnDoesNotExistError;
+                }
+
+            }
+
+            //Columnas en condición incorrectas
+            if (Where != null)
+            {
+                string c = Where.ColumnName;
+                if (c == null || t.ColumnByName(c) == null)
+                {
+                    return Constants.ColumnDoesNotExistError;
+                }
             }
 
             Table table = database.Select(Table, Columns, Where);
+
             if (table == null)
             {
                 return Constants.Error;
             }
-            return Constants.Error;
+
+            return table.ToString();
         }
     }
 }

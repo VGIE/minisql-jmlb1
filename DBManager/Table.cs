@@ -121,7 +121,7 @@ namespace DbManager
             //"['Name']{'Adolfo'}{'Jacinto'}" <- one column, two rows
             //"['Name','Age']{'Adolfo','23'}{'Jacinto','24'}" <- two columns, two rows
             //"" <- no columns, no rows
-            //"[Name]" <- one column, no rows
+            //"['Name']" <- one column, no rows
             string res = "";
             if( NumColumns() == 0)
             {
@@ -131,7 +131,7 @@ namespace DbManager
             //columnas
             for(int i=0; i<ColumnDefinitions.Count; i++)
             {
-                res = res + ColumnDefinitions[i].Name;
+                res = res + "'" + ColumnDefinitions[i].Name + "'";
                 if (i < ColumnDefinitions.Count - 1)
                 {
                     res = res + ",";
