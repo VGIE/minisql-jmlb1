@@ -12,7 +12,7 @@ namespace DbManager
         public static MiniSqlQuery Parse(string miniSQLQuery)
         {
             //TODO DEADLINE 2
-            const string selectPattern = @"^SELECT\s+([a-zA-Z0-9]+(?:,[a-zA-Z0-9]+)*)\s+FROM\s+([a-zA-Z0-9]+)(\s+WHERE\s+([a-zA-Z0-9]+(>|<|=)'((-[0-9]+(\.[0-9]+)?)|([0-9]+(\.[0-9]+)?)|([a-zA-Z0-9]+(?:\s[a-zA-Z0-9]+)*))'))?$";
+            const string selectPattern = @"^SELECT\s+([a-zA-Z0-9]+(?:,[a-zA-Z0-9]+)*)\s+FROM\s+([a-zA-Z0-9]+)(?:\s+WHERE\s+([a-zA-Z0-9]+)(=|<|>)'(-?[0-9]+(?:\.[0-9]+)?|[a-zA-Z]+(?:\s[a-zA-Z]+)*)')?$";
 
             const string dropTablePattern = @"^DROP\s+TABLE\s+([a-zA-Z0-9]+)$";
 

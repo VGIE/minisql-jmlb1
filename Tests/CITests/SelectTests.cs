@@ -17,8 +17,33 @@ namespace SecurityParsingTests
         {
             Database database = new Database("user", "password");
             database.ExecuteMiniSQLQuery("CREATE TABLE TestTable (Age INT,Name TEXT)");
-            //Assert.Equal("[Age]", database.ExecuteMiniSQLQuery("SELECT Age FROM TestTable"));
             Assert.Equal("['Age']", database.ExecuteMiniSQLQuery("SELECT Age FROM TestTable"));
+        }
+
+
+        [Fact]
+        public void Execute2()
+        {
+            Database database = new Database("user", "password");
+            database.ExecuteMiniSQLQuery("CREATE TABLE TestTable (Age INT,Name TEXT,Size INT,City TEXT)");
+            Assert.Equal("['Age','Name']", database.ExecuteMiniSQLQuery("SELECT Age,Name FROM TestTable"));
+            Assert.Equal("['City','Size']", database.ExecuteMiniSQLQuery("SELECT City,Size FROM TestTable"));
+            Assert.Equal("['City','Size','Age']", database.ExecuteMiniSQLQuery("SELECT City,Size,Age FROM TestTable"));
+            Assert.Equal("['City','Size','Age','Name']", database.ExecuteMiniSQLQuery("SELECT City,Size,Age,Name FROM TestTable WHERE Age='20'"));
+        }
+
+        [Fact]
+        public void TestDebugSelectParsingWithWhere()
+        {
+            string query = "SELECT nombre,edad FROM users WHERE nombre='Jon'";
+            MiniSqlQuery result = MiniSQLParser.Parse(query);
+
+            Assert.NotNull(result);
+            Select select = result as Select;
+            Assert.NotNull(select);
+            Assert.Equal(2, select.Columns.Count);
+            Assert.Equal("nombre", select.Columns[0]);
+            Assert.Equal("edad", select.Columns[1]);
         }
 
         //test de pruebas para encontrar el error
