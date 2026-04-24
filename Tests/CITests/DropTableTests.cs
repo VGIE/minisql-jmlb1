@@ -15,9 +15,9 @@ namespace SecurityParsingTests
         public void ValidDropTable()
         {
             //solo letras
-            DropTable query1 = MiniSQLParser.Parse("DROP TABLE users") as DropTable;
-            Assert.NotNull(query1);
-            Assert.Equal("users", query1.Table);
+            DropTable query = MiniSQLParser.Parse("DROP TABLE users") as DropTable;
+            Assert.NotNull(query);
+            Assert.Equal("users", query.Table);
             //letras y numeros
             DropTable query2 = MiniSQLParser.Parse("DROP TABLE Products123") as DropTable;
             Assert.NotNull(query2);
