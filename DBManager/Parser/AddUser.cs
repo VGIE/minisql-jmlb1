@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DbManager.Parser;
+using DbManager.Security;
 
 namespace DbManager
 {
@@ -24,8 +25,27 @@ namespace DbManager
         {
             //TODO DEADLINE 5: Run the query and return the appropriate message
             //UsersProfileIsNotGrantedRequiredPrivilege, SecurityProfileDoesNotExistError, AddUserSuccess
-            
-            return null;
+
+            //comrpobar que el usuario es administrador, si no no puede añadir
+            if (!database.SecurityManager.IsUserAdmin())
+            {
+                return Constants.UsersProfileIsNotGrantedRequiredPrivilege;
+            }
+
+            //buscamos perfil de seguridad
+            Profile profile = database.SecurityManager.ProfileByUser(ProfileName);
+
+            //verificar que el perfil exista
+            if(profile == null)
+            {
+                return Constants.SecurityProfileDoesNotExistError;
+            }
+
+            //creamos el usuario y lo añadimos a ese perfil
+            User user = new User(Username, Password);
+            profile.Users.Add(user);
+
+            return Constants.AddUserSuccess;
             
         }
 

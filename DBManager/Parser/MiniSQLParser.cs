@@ -42,7 +42,7 @@ namespace DbManager
 
             const string revokePattern = null;
 
-            const string addUserPattern = null;
+            const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$"; 
 
             const string deleteUserPattern = null;
 
@@ -173,6 +173,21 @@ namespace DbManager
                     }
                 }
                 return new CreateTable(nombreTabla, crearColumnas);
+            }
+
+            //addUser
+            Match matchAddUser = Regex.Match(miniSQLQuery, addUserPattern);
+            if (matchAddUser.Success)
+            {
+                string username = matchAddUser.Groups[1].Value;
+                string password = matchAddUser.Groups[2].Value;
+                string securityProfile = matchAddUser.Groups[3].Value;
+
+                if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(securityProfile))
+                {
+                    return null;
+                }
+                return new AddUser(username, password, securityProfile);
             }
 
 
