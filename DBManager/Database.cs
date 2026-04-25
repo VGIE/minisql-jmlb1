@@ -33,7 +33,9 @@ namespace DbManager
 
             m_password = adminPassword;
 
-            
+            SecurityManager = new Manager(adminUsername);
+
+
         }
 
         public bool AddTable(Table table)

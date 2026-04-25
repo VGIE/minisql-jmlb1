@@ -70,6 +70,27 @@ namespace SecurityParsingTests
             query = MiniSQLParser.Parse("ADD USER (,,)") as AddUser;
             Assert.Null(query);
         }
+
+        [Fact]
+        public void Execute()
+        {
+            string adminUsername = "admin";
+            string adminPassword = "adminPassword";
+            string profileName = "Admin";
+
+
+            //creamos la base de dtos con el administrador, si no podrá añadir
+            Database db = new Database("admin", "adminPassword");
+
+            Profile adminProfile = new Profile();
+            adminProfile.Name = "Admin";
+            adminProfile.Users.Add(new User("admin", Encryption.Encrypt("adminPassword")));
+
+            db.SecurityManager.AddProfile(adminProfile);
+
+
+        }
+
     }
 }
 
