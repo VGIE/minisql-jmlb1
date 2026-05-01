@@ -33,7 +33,7 @@ namespace DbManager
             }
 
             //buscamos perfil de seguridad
-            Profile profile = database.SecurityManager.ProfileByUser(ProfileName);
+            Profile profile = database.SecurityManager.ProfileByName(ProfileName);
 
             //verificar que el perfil exista
             if(profile == null)

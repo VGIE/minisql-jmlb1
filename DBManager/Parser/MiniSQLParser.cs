@@ -36,7 +36,7 @@ namespace DbManager
             //TODO DEADLINE 4
             const string createSecurityProfilePattern = null;
 
-            const string dropSecurityProfilePattern = null;
+            const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$"; 
 
             const string grantPattern = null;
 
@@ -190,6 +190,19 @@ namespace DbManager
                 return new AddUser(username, password, securityProfile);
             }
 
+            //dropSecurityProfile
+            Match matchDropSecurityProfile = Regex.Match(miniSQLQuery, dropSecurityProfilePattern);
+            if (matchDropSecurityProfile.Success)
+            {
+                string profileName = matchDropSecurityProfile.Groups[1].Value.Trim();
+                if (string.IsNullOrEmpty(profileName))
+                {
+                    return null;
+                }
+
+                return new DropSecurityProfile(profileName);
+
+            }
 
             //Update
             Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
