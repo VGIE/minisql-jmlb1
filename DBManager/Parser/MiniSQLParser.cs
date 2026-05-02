@@ -128,6 +128,11 @@ namespace DbManager
                 string nombreTabla = createMatch.Groups[1].Value;
                 string columnasText = createMatch.Groups[2].Value;
 
+                if(columnasText.Contains(" ,") || columnasText.Contains(", "))
+                {
+                    return null;
+                }
+
                 List<ColumnDefinition> crearColumnas = new List<ColumnDefinition>();
 
                 if (!string.IsNullOrWhiteSpace(columnasText))
