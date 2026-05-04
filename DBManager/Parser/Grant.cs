@@ -16,9 +16,9 @@ namespace DbManager
         public Grant(string privilegeName, string tableName, string profileName)
         {
             //TODO DEADLINE 4: Initialize member variables
-            privilegeName = this.PrivilegeName;
-            tableName = this.TableName;
-            profileName = this.ProfileName;
+            PrivilegeName = privilegeName;
+            TableName = tableName;
+            ProfileName = profileName;
             
         }
         public string Execute(Database database)

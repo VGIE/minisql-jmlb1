@@ -18,31 +18,31 @@ namespace DbManager
 
 
             //LEIRE --> #16
-            const string insertPattern = @"^INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
+            const string insertPattern = @"INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
 
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
 
-            const string createTablePattern = @"^CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
+            const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)";
 
             //LEIRE --> #26
-            const string updateTablePattern = @"^UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
+            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
 
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
             //TODO DEADLINE 4
             const string createSecurityProfilePattern = @"^CREATE\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
-            const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$"; 
+            const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
             const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
             const string revokePattern = null;
 
-            const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$"; 
+            const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$";
 
             const string deleteUserPattern = null;
 
@@ -128,7 +128,7 @@ namespace DbManager
                 string nombreTabla = createMatch.Groups[1].Value;
                 string columnasText = createMatch.Groups[2].Value;
 
-                if(columnasText.Contains(" ,") || columnasText.Contains(", "))
+                if (columnasText.Contains(" ,") || columnasText.Contains(", "))
                 {
                     return null;
                 }
@@ -188,7 +188,7 @@ namespace DbManager
                 string password = matchAddUser.Groups[2].Value;
                 string securityProfile = matchAddUser.Groups[3].Value;
 
-                if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(securityProfile))
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(securityProfile))
                 {
                     return null;
                 }
@@ -312,7 +312,7 @@ namespace DbManager
                 return new CreateSecurityProfile(profileName);
             }
 
-            
+            //GRANT
             Match matchGrant = Regex.Match(miniSQLQuery, grantPattern);
             if (matchGrant.Success)
             {
@@ -327,6 +327,9 @@ namespace DbManager
 
                 return new Grant(permission, resource, user);
             }
+
+            return null;
+
         }
 
         static List<string> CommaSeparatedNames(string text)

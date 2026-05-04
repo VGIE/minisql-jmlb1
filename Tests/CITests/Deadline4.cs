@@ -11,14 +11,14 @@ namespace SecurityParsingTests
 {
     public class Deadline4
     {
-        //[Fact]
-        /*public void grantDelete()
+        [Fact]
+        public void grantDelete()
         {
             Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
             Assert.Equal("DELETE", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
             Assert.Equal("User", query.ProfileName);
-        }*/
+        }
 
         [Fact]
         public void grantInsert()
@@ -36,6 +36,16 @@ namespace SecurityParsingTests
             Assert.Equal("Table", query.TableName);
             Assert.Equal("User", query.ProfileName);
         }
+        [Fact]
+        public void grantUpdate()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO User") as Grant;
+            Assert.Equal("UPDATE", query.PrivilegeName);
+            Assert.Equal("Table", query.TableName);
+            Assert.Equal("User", query.ProfileName);
+        }
+
+
         [Fact]
         public void grantUpdate()
         {
