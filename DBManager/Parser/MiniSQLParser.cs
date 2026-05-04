@@ -34,15 +34,15 @@ namespace DbManager
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
             //TODO DEADLINE 4
-            const string createSecurityProfilePattern = null;
+            const string createSecurityProfilePattern = @"^CREATE\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
-            const string dropSecurityProfilePattern = null;
+            const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$"; 
 
             const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
             const string revokePattern = null;
 
-            const string addUserPattern = null;
+            const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$"; 
 
             const string deleteUserPattern = null;
 
@@ -128,6 +128,11 @@ namespace DbManager
                 string nombreTabla = createMatch.Groups[1].Value;
                 string columnasText = createMatch.Groups[2].Value;
 
+                if(columnasText.Contains(" ,") || columnasText.Contains(", "))
+                {
+                    return null;
+                }
+
                 List<ColumnDefinition> crearColumnas = new List<ColumnDefinition>();
 
                 if (!string.IsNullOrWhiteSpace(columnasText))
@@ -175,6 +180,34 @@ namespace DbManager
                 return new CreateTable(nombreTabla, crearColumnas);
             }
 
+            //addUser
+            Match matchAddUser = Regex.Match(miniSQLQuery, addUserPattern);
+            if (matchAddUser.Success)
+            {
+                string username = matchAddUser.Groups[1].Value;
+                string password = matchAddUser.Groups[2].Value;
+                string securityProfile = matchAddUser.Groups[3].Value;
+
+                if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(securityProfile))
+                {
+                    return null;
+                }
+                return new AddUser(username, password, securityProfile);
+            }
+
+            //dropSecurityProfile
+            Match matchDropSecurityProfile = Regex.Match(miniSQLQuery, dropSecurityProfilePattern);
+            if (matchDropSecurityProfile.Success)
+            {
+                string profileName = matchDropSecurityProfile.Groups[1].Value.Trim();
+                if (string.IsNullOrEmpty(profileName))
+                {
+                    return null;
+                }
+
+                return new DropSecurityProfile(profileName);
+
+            }
 
             //Update
             Match matchUpdate = Regex.Match(miniSQLQuery, updateTablePattern);
@@ -271,6 +304,13 @@ namespace DbManager
 
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
+            // Create Security Profile
+            Match matchCreateSecurity = Regex.Match(miniSQLQuery, createSecurityProfilePattern);
+            if (matchCreateSecurity.Success)
+            {
+                string profileName = matchCreateSecurity.Groups[1].Value;
+                return new CreateSecurityProfile(profileName);
+            }
 
             
             Match matchGrant = Regex.Match(miniSQLQuery, grantPattern);

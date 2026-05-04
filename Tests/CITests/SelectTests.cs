@@ -74,8 +74,8 @@ namespace SecurityParsingTests
         [Fact]
         public void TestCreateTablePattern()
         {
-            string query = "CREATE TABLE users (Nombre TEXT, Edad INT)";
-            Match match = Regex.Match(query, @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)");
+            string query1 = "CREATE TABLE users (Nombre TEXT, Edad INT)";
+            Match match = Regex.Match(query1, @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)");
 
             Assert.True(match.Success);
             Assert.Equal("users", match.Groups[1].Value);
