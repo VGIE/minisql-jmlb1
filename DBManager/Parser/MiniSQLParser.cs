@@ -34,7 +34,7 @@ namespace DbManager
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
             //TODO DEADLINE 4
-            const string createSecurityProfilePattern = null;
+            const string createSecurityProfilePattern = @"^CREATE\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
             const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$"; 
 
@@ -304,6 +304,13 @@ namespace DbManager
 
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
+            // Create Security Profile
+            Match matchCreateSecurity = Regex.Match(miniSQLQuery, createSecurityProfilePattern);
+            if (matchCreateSecurity.Success)
+            {
+                string profileName = matchCreateSecurity.Groups[1].Value;
+                return new CreateSecurityProfile(profileName);
+            }
 
             return null;
 
