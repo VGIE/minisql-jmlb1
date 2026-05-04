@@ -18,18 +18,18 @@ namespace DbManager
 
 
             //LEIRE --> #16
-            const string insertPattern = @"INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
+            const string insertPattern = @"^INSERT\s+INTO\s+([\w_]+)\s+VALUES\s+\(('[^',]*'(?:,'(?:[^',]*)')*)\)$";
 
 
             //Note: The parsing of CREATE TABLE should accept empty columns "()"
             //And then, an execution error should be given if a CreateTable without columns is executed
 
-            const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
+            const string createTablePattern = @"^CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s+\(\s*(.*?)\s*\)";
             //const string createTablePattern = @"CREATE\s+TABLE\s+([a-zA-Z][a-zA-Z0-9]*)\s*\((.*)\)";
 
             //LEIRE --> #26
-            const string updateTablePattern = @"UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
+            const string updateTablePattern = @"^UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(\w+)\s*([=<>])\s*('[^']*'))?$";
 
             const string deletePattern = @"^DELETE\s+FROM\s+([a-zA-Z0-9]+)\s+WHERE\s+([a-zA-Z0-9]+)(>|<|=)'([^']*)'$";
 
@@ -38,7 +38,7 @@ namespace DbManager
 
             const string dropSecurityProfilePattern = null;
 
-            const string grantPattern = null;
+            const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
             const string revokePattern = null;
 
@@ -76,7 +76,7 @@ namespace DbManager
                 Condition cond = null;
 
                 //si hay where
-                if (matchSelect.Groups[3].Success) 
+                if (matchSelect.Groups[3].Success)
                 {
                     string colum = matchSelect.Groups[3].Value;
                     string op = matchSelect.Groups[4].Value;
@@ -272,8 +272,21 @@ namespace DbManager
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
 
-            return null;
+            
+            Match matchGrant = Regex.Match(miniSQLQuery, grantPattern);
+            if (matchGrant.Success)
+            {
+                string permission = matchGrant.Groups[1].Value;
+                string resource = matchGrant.Groups[2].Value;
+                string user = matchGrant.Groups[3].Value;
 
+                if (string.IsNullOrEmpty(permission) || string.IsNullOrEmpty(resource) || string.IsNullOrEmpty(user))
+                {
+                    return null;
+                }
+
+                return new Grant(permission, resource, user);
+            }
         }
 
         static List<string> CommaSeparatedNames(string text)
@@ -289,3 +302,4 @@ namespace DbManager
 
     }
 }
+
