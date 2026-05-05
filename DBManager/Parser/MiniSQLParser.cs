@@ -40,11 +40,11 @@ namespace DbManager
 
             const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
-            const string revokePattern = null;
+            //const string revokePattern = @"^REVOKE\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([a-zA-Z][a-zA-Z0-9]*)\s+TO\s+([a-zA-Z][a-zA-Z0-9]*)$";
 
             const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$";
 
-            const string deleteUserPattern = null;
+            const string deleteUserPattern = @"^DELETE\s+USER\s+([a-zA-Z][a-zA-Z0-9]*)$";
 
 
             //TODO DEADLINE 2
@@ -304,12 +304,43 @@ namespace DbManager
 
             //TODO DEADLINE 4
             //Do the same for the security queries (CREATE SECURITY PROFILE, ...)
+
             // Create Security Profile
             Match matchCreateSecurity = Regex.Match(miniSQLQuery, createSecurityProfilePattern);
             if (matchCreateSecurity.Success)
             {
                 string profileName = matchCreateSecurity.Groups[1].Value;
                 return new CreateSecurityProfile(profileName);
+            }
+            /*
+            // Revoke
+            Match matchRevoke = Regex.Match(miniSQLQuery, revokePattern);
+            if (matchRevoke.Success)
+            {
+                string permission = matchRevoke.Groups[1].Value.Trim();
+                string tableName = matchRevoke.Groups[2].Value.Trim();
+                string profileName = matchRevoke.Groups[3].Value.Trim();
+
+                if (string.IsNullOrEmpty(permission) || string.IsNullOrEmpty(tableName) || string.IsNullOrEmpty(profileName))
+                {
+                    return null;
+                }
+
+                return new Revoke(permission, tableName, profileName);
+            }
+            */
+            // DeleteUser
+            Match matchDeleteUser = Regex.Match(miniSQLQuery, deleteUserPattern);
+            if (matchDeleteUser.Success)
+            {
+                string username = matchDeleteUser.Groups[1].Value.Trim();
+
+                if (string.IsNullOrEmpty(username))
+                {
+                    return null;
+                }
+
+                return new DeleteUser(username);
             }
 
             //GRANT
@@ -331,6 +362,8 @@ namespace DbManager
             return null;
 
         }
+
+
 
         static List<string> CommaSeparatedNames(string text)
         {

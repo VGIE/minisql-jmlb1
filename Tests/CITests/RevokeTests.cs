@@ -135,5 +135,4 @@ namespace SecurityParsingTests
             Assert.NotNull(query);
         }
     }
-}
-*/
+}*/
