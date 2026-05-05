@@ -47,12 +47,19 @@ namespace SecurityParsingTests
 
 
         [Fact]
-        public void grantUpdate()
+        public void grantInvalid1()
         {
-            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO User1") as Grant;
             Assert.Equal("UPDATE", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("User1", query.ProfileName);
+        }
+
+        [Fact]
+        public void grantInvalid2()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO User_1") as Grant;
+            Assert.Null(query);
         }
     }
 }
