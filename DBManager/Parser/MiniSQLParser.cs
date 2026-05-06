@@ -38,7 +38,7 @@ namespace DbManager
 
             const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
-            const string grantPattern = null;
+            const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
             //const string revokePattern = @"^REVOKE\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([a-zA-Z][a-zA-Z0-9]*)\s+TO\s+([a-zA-Z][a-zA-Z0-9]*)$";
 
@@ -343,6 +343,22 @@ namespace DbManager
                 return new DeleteUser(username);
             }
 
+            //GRANT
+            Match matchGrant = Regex.Match(miniSQLQuery, grantPattern);
+            if (matchGrant.Success)
+            {
+                string permission = matchGrant.Groups[1].Value;
+                string resource = matchGrant.Groups[2].Value;
+                string user = matchGrant.Groups[3].Value;
+
+                if (string.IsNullOrEmpty(permission) || string.IsNullOrEmpty(resource) || string.IsNullOrEmpty(user))
+                {
+                    return null;
+                }
+
+                return new Grant(permission, resource, user);
+            }
+
             return null;
 
         }
@@ -362,3 +378,4 @@ namespace DbManager
 
     }
 }
+
