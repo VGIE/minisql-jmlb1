@@ -69,6 +69,11 @@ namespace OurTests
                 new ColumnDefinition(ColumnDefinition.DataType.Int, "Edad")
             };
 
+            List<ColumnDefinition> columns2 = new List<ColumnDefinition>()
+            {
+                
+            };
+
             //se crea 
             Assert.True(db.CreateTable("users", columns));
             Assert.Equal(Constants.CreateTableSuccess, db.LastErrorMessage);
@@ -80,6 +85,10 @@ namespace OurTests
             //no nos dan columnas
             Assert.False(db.CreateTable("animals", null));
             Assert.Equal(Constants.DatabaseCreatedWithoutColumnsError, db.LastErrorMessage);
+
+            Assert.False(db.CreateTable("players", columns2));
+            Assert.Equal(Constants.DatabaseCreatedWithoutColumnsError, db.LastErrorMessage);
+
 
         }
         [Fact]
