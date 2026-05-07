@@ -21,8 +21,7 @@ namespace DbManager.Security
         public bool IsUserAdmin()
         {
             //TODO DEADLINE 5: Return true if the user logged-in (m_username) is the admin, false otherwise
-            Profile profile = ProfileByUser(m_username);
-            return profile != null && profile.Name == "Admin";
+            return m_username == "Admin";
 
         }
 
