@@ -15,9 +15,9 @@ namespace SecurityParsingTests
         [Fact]
         public void TestAdminTrue()
         {
-            Manager manager = new Manager("Admin");
+            Manager manager = new Manager("admin");
             Profile profile = new Profile { Name = "Admin" };
-            User user = new User("Admin", "pass");
+            User user = new User("admin", "pass");
             profile.Users.Add(user);
             manager.Profiles.Add(profile);
             bool result = manager.IsUserAdmin();
@@ -116,11 +116,11 @@ namespace SecurityParsingTests
         [Fact]
         public void TestAddProfile()
         {
-            Manager manager = new Manager("Admin");
+            Manager manager = new Manager("admin");
 
             Profile adminProfile = new Profile { Name = "Admin" };
 
-            User adminUser = new User("Admin", "password");
+            User adminUser = new User("admin", "password");
             //añadimos el profil
             adminProfile.Users.Add(adminUser);
             manager.Profiles.Add(adminProfile);
@@ -144,11 +144,11 @@ namespace SecurityParsingTests
         [Fact]
         public void AddProfile_ShouldNotAddDuplicate()
         {
-            Manager manager = new Manager("Admin");
+            Manager manager = new Manager("adminUser");
 
             Profile adminProfile = new Profile();
             adminProfile.Name = Profile.AdminProfileName;
-            adminProfile.Users.Add(new User("Admin", "adminPass"));
+            adminProfile.Users.Add(new User("adminUser", "adminPass"));
 
 
             manager.Profiles.Add(adminProfile);
@@ -277,11 +277,11 @@ namespace SecurityParsingTests
         [Fact]
         public void testIsGrantedPrivilege()
         {
-            Manager manager = new Manager("Admin");
+            Manager manager = new Manager("adminUser");
 
             Profile adminProfile = new Profile();
             adminProfile.Name = Profile.AdminProfileName;
-            adminProfile.Users.Add(new User("Admin", "adminPass"));
+            adminProfile.Users.Add(new User("adminUser", "adminPass"));
             manager.Profiles.Add(adminProfile);
 
             Profile profile = new Profile();

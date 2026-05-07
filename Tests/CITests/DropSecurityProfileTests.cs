@@ -99,13 +99,13 @@ namespace SecurityParsingTests
         [Fact]
         public void Execute_AdminPerfilNoExiste()
         {
-            Database db = new Database("Admin", "password");
+            Database db = new Database("admin", "password");
 
             //perfil de administrador
             Profile adminProf = new Profile();
             adminProf.Name = "Admin";
 
-            User adminUser = new User("Admin", "password");
+            User adminUser = new User("admin", "password");
             adminProf.Users.Add(adminUser);
 
             db.SecurityManager.Profiles.Add(adminProf);
@@ -120,12 +120,12 @@ namespace SecurityParsingTests
         [Fact]
         public void Execute_AdminPerfilExiste()
         {
-            Database db = new Database("Admin", "password");
+            Database db = new Database("admin", "password");
 
             //administrador
             Profile adminProf = new Profile();
             adminProf.Name = "Admin";
-            User adminUser = new User("Admin", "password");
+            User adminUser = new User("admin", "password");
             adminProf.Users.Add(adminUser);
 
             db.SecurityManager.Profiles.Add(adminProf);
