@@ -37,7 +37,7 @@ namespace SecurityParsingTests
             CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE new profile") as CreateSecurityProfile;
             Assert.Null(query);
 
-             query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof ile") as CreateSecurityProfile;
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof ile") as CreateSecurityProfile;
             Assert.Null(query);
         }
 
@@ -78,6 +78,33 @@ namespace SecurityParsingTests
 
             query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile") as CreateSecurityProfile;
             Assert.NotNull(query);
+        }
+
+
+        [Fact]
+        public void IncorrectProfileWithNumbers()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof123") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE 123prof") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE p1r2o3f") as CreateSecurityProfile;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void IncorrectProfileWithUnserscore()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile_one") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE _profile") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile_") as CreateSecurityProfile;
+            Assert.Null(query);
         }
 
         [Fact]
