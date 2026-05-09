@@ -32,6 +32,16 @@ namespace SecurityParsingTests
         }
 
         [Fact]
+        public void IncorrectWithSpaces()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE new profile") as CreateSecurityProfile;
+            Assert.Null(query);
+
+             query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof ile") as CreateSecurityProfile;
+            Assert.Null(query);
+        }
+
+        [Fact]
         public void IncorrectCapitalization()
         {
             CreateSecurityProfile query = MiniSQLParser.Parse("Create SECURITY PROFILE profile") as CreateSecurityProfile;

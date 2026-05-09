@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DbManager.Parser;
+using DbManager.Security;
 
 namespace DbManager
 {
@@ -22,23 +23,25 @@ namespace DbManager
             //UsersProfileIsNotGrantedRequiredPrivilege, SecurityProfileDoesNotExistError, DropSecurityProfileSuccess
 
             //comprobamos que sea administrador si no no puede eliminar a nadie
-            if (!database.SecurityManager.IsUserAdmin())
+            if (!database.IsUserAdmin())
             {
                 return Constants.UsersProfileIsNotGrantedRequiredPrivilege;
             }
 
-            //si es adminitrados
+            //si es adminitrador
+            //creamos el perfil
+            Profile prof = database.SecurityManager.ProfileByName(ProfileName);
 
-            bool seHaEliminado = database.SecurityManager.RemoveProfile(ProfileName);
-
-            //si se ha podido eliminar
-            if (seHaEliminado)
+            if(prof == null)
             {
-                return Constants.DropSecurityProfileSuccess;
+                return Constants.SecurityProfileDoesNotExistError;
             }
 
-            return Constants.SecurityProfileDoesNotExistError;
+            database.SecurityManager.RemoveProfile(ProfileName);
 
+            return Constants.DropSecurityProfileSuccess;
+
+                       
         }
 
     }

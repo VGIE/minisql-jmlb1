@@ -134,6 +134,84 @@ namespace SecurityParsingTests
             query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
             Assert.NotNull(query);
         }
+        [Fact]
+        public void CorrectWithLowerCaseIdentifiers()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT SELECT ON customers TO sales") as Grant;
+            Assert.Equal("SELECT", query.PrivilegeName);
+            Assert.Equal("customers", query.TableName);
+            Assert.Equal("sales", query.ProfileName);
+        }
+
+        [Fact]
+        public void CorrectWithNumbersInIdentifiers()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT INSERT ON table1 TO profile123") as Grant;
+            Assert.Equal("INSERT", query.PrivilegeName);
+            Assert.Equal("table1", query.TableName);
+            Assert.Equal("profile123", query.ProfileName);
+        }
+
+        [Fact]
+        public void CorrectWithUnderscoresInIdentifiers()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON table_name TO profile_name") as Grant;
+            Assert.Equal("UPDATE", query.PrivilegeName);
+            Assert.Equal("table_name", query.TableName);
+            Assert.Equal("profile_name", query.ProfileName);
+        }
+
+        [Fact]
+        public void IncorrectKeywordOrder()
+        {
+            Grant query = MiniSQLParser.Parse("SELECT GRANT ON Table TO User") as Grant;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("GRANT TO User ON Table SELECT") as Grant;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void IncorrectWithoutKeywordTO()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table User") as Grant;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void NullOrEmptyInputShouldFail()
+        {
+            Grant query = MiniSQLParser.Parse("") as Grant;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse(null) as Grant;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void IncompletePrivilegeShouldFail()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT UPD ON Table TO User") as Grant;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void ValidWithMultipleSpacesAndTabs()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT\tSELECT \t ON\tTable\tTO\tUser") as Grant;
+            Assert.Equal("SELECT", query.PrivilegeName);
+            Assert.Equal("Table", query.TableName);
+            Assert.Equal("User", query.ProfileName);
+        }
+
+        [Fact]
+        public void CorrectWithCaseSensitiveTableAndProfile()
+        {
+            Grant query = MiniSQLParser.Parse("GRANT DELETE ON CustomerOrders TO SalesTeam") as Grant;
+            Assert.Equal("DELETE", query.PrivilegeName);
+            Assert.Equal("CustomerOrders", query.TableName);
+            Assert.Equal("SalesTeam", query.ProfileName);
+        }
+
     }
-}
-*/
+}*/
