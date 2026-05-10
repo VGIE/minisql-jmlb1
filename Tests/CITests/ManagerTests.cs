@@ -270,6 +270,18 @@ namespace SecurityParsingTests
 
             Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Select));
 
+
+            //casos incorrectos
+            Manager managerNoAdmin = new Manager("NoAdmin");
+
+            //perfil que no sea admin
+            Profile prof = new Profile { Name = "Usuario" };
+            prof.Users.Add(new User("NoAdmin", "password"));
+            managerNoAdmin.Profiles.Add(prof);
+
+            managerNoAdmin.GrantPrivilege("Usuario", "Users", Privilege.Delete);
+            Assert.False(prof.IsGrantedPrivilege("Users", Privilege.Delete));
+
         }
 
 
