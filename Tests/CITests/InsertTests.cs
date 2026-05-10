@@ -120,6 +120,22 @@ namespace SecurityParsingTests
             Assert.Equal(Constants.InsertSuccess, op2);
             Assert.Equal(Constants.InsertSuccess, op3);
 
+
+            //casos no validos
+            Insert ins4 = new Insert("TablaPrueba", new List<String>() { "Markel" });
+
+            Insert ins5 = new Insert("TablaPrueba", new List<String>() { "Markel", "20", "Extra" });
+
+            Insert ins6 = new Insert("TablaInexistente", new List<String>() { "Markel", "20" });
+
+            string op4 = ins4.Execute(db);
+            string op5 = ins5.Execute(db);
+            string op6 = ins6.Execute(db);
+
+            Assert.Equal(Constants.ColumnCountsDontMatch, op4);
+            Assert.Equal(Constants.ColumnCountsDontMatch, op5);
+            Assert.Equal(Constants.TableDoesNotExistError, op6);
+
         }
     }
 }
