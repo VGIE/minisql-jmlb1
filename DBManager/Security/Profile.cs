@@ -19,7 +19,7 @@ namespace DbManager.Security
             //TODO DEADLINE 5: Grant this privilege on this table. Return false if there is an error, true otherwise
 
             //comprobamos si son válidos los datos
-            if (table == null || privilege == null)
+            if (table == null || privilege == null || table == "")
             {
                 return false;
             }

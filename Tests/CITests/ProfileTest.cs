@@ -62,15 +62,29 @@ namespace SecurityParsingTests
             Profile profile = new Profile();
             profile.Name = "Editor";
 
+            
+
             //dando el privilegio de seleccionar debería dar true el resultado
             bool resultado = profile.GrantPrivilege("Users", Privilege.Select);
             //comprobamos que da true
             Assert.True(resultado);
 
+            
+
             //comprobamos que esta esa tabla con privilegios
             Assert.Contains("Users", profile.PrivilegesOn.Keys);
             //comprobamos que la tabla users contiene ese privilegio 
             Assert.Contains(Privilege.Select, profile.PrivilegesOn["Users"]);
+
+            //casos incorrectos
+            
+            bool resultado2 = profile.GrantPrivilege("", Privilege.Select);
+            Assert.False(resultado2);
+
+           
+
+            
+
         }
     }
 }
