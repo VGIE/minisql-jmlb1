@@ -70,20 +70,29 @@ namespace SecurityParsingTests
             Assert.True(resultado);
 
             
-
             //comprobamos que esta esa tabla con privilegios
             Assert.Contains("Users", profile.PrivilegesOn.Keys);
             //comprobamos que la tabla users contiene ese privilegio 
             Assert.Contains(Privilege.Select, profile.PrivilegesOn["Users"]);
 
+            //misma tabla, otro privilegio
+            bool resultado1 = profile.GrantPrivilege("Users", Privilege.Insert);
+            Assert.True(resultado1);
+
             //casos incorrectos
-            
+
             bool resultado2 = profile.GrantPrivilege("", Privilege.Select);
             Assert.False(resultado2);
 
-           
+            bool resultado3 = profile.GrantPrivilege(null, Privilege.Select);
+            Assert.False(resultado3);
 
-            
+            //ya tiene ese privilegio
+            bool resultado4 = profile.GrantPrivilege("Users", Privilege.Select);
+            Assert.False(resultado4);
+
+
+
 
         }
     }

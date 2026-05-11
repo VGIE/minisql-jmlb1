@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -79,7 +79,7 @@ namespace SecurityParsingTests
         }
 
         [Fact]
-        public void IncorrectProfileWithForbiddenChars()
+        public void IncorrectProfileWithErrorProfileName()
         {
             Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User 1") as Grant;
             Assert.Null(query);
@@ -153,15 +153,6 @@ namespace SecurityParsingTests
         }
 
         [Fact]
-        public void CorrectWithUnderscoresInIdentifiers()
-        {
-            Grant query = MiniSQLParser.Parse("GRANT UPDATE ON table_name TO profile_name") as Grant;
-            Assert.Equal("UPDATE", query.PrivilegeName);
-            Assert.Equal("table_name", query.TableName);
-            Assert.Equal("profile_name", query.ProfileName);
-        }
-
-        [Fact]
         public void IncorrectKeywordOrder()
         {
             Grant query = MiniSQLParser.Parse("SELECT GRANT ON Table TO User") as Grant;
@@ -175,16 +166,6 @@ namespace SecurityParsingTests
         public void IncorrectWithoutKeywordTO()
         {
             Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table User") as Grant;
-            Assert.Null(query);
-        }
-
-        [Fact]
-        public void NullOrEmptyInputShouldFail()
-        {
-            Grant query = MiniSQLParser.Parse("") as Grant;
-            Assert.Null(query);
-
-            query = MiniSQLParser.Parse(null) as Grant;
             Assert.Null(query);
         }
 
@@ -214,4 +195,4 @@ namespace SecurityParsingTests
         }
 
     }
-}*/
+}

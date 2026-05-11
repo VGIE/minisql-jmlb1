@@ -139,6 +139,17 @@ namespace SecurityParsingTests
             Assert.Equal(3, manager.Profiles.Count);
             Assert.Equal("Prueba2", manager.Profiles[2].Name);
 
+            //probamos que no se añada un perfil con el mismo nombre
+            Profile prof3 = new Profile { Name = "Prueba" };
+            manager.AddProfile(prof3);
+            Assert.Equal(3, manager.Profiles.Count);
+
+            //si no es admin no se añaden perfiles
+            Manager noAdmin = new Manager("noAdmin");
+            Profile prof4 = new Profile { Name = "Prueba4" };
+            noAdmin.AddProfile(prof4);
+            Assert.Empty(noAdmin.Profiles);
+
         }
 
         [Fact]
@@ -269,6 +280,18 @@ namespace SecurityParsingTests
             manager.GrantPrivilege("Editor", "Users", Privilege.Select);
 
             Assert.True(profile.IsGrantedPrivilege("Users", Privilege.Select));
+
+
+            //casos incorrectos
+            Manager managerNoAdmin = new Manager("NoAdmin");
+
+            //perfil que no sea admin
+            Profile prof = new Profile { Name = "Usuario" };
+            prof.Users.Add(new User("NoAdmin", "password"));
+            managerNoAdmin.Profiles.Add(prof);
+
+            managerNoAdmin.GrantPrivilege("Usuario", "Users", Privilege.Delete);
+            Assert.False(prof.IsGrantedPrivilege("Users", Privilege.Delete));
 
         }
 
