@@ -27,7 +27,7 @@ namespace DbManager
             //UsersProfileIsNotGrantedRequiredPrivilege, SecurityProfileDoesNotExistError, AddUserSuccess
 
             //comrpobar que el usuario es administrador, si no no puede añadir
-            if (!database.SecurityManager.IsUserAdmin())
+            if (!database.IsUserAdmin())
             {
                 return Constants.UsersProfileIsNotGrantedRequiredPrivilege;
             }

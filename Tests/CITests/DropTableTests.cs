@@ -51,5 +51,44 @@ namespace SecurityParsingTests
             DropTable query6 = MiniSQLParser.Parse("DROP TABLE users extra") as DropTable;
             Assert.Null(query6);
         }
+
+        [Fact]
+        public void DropTableExecute_ExistingTable_ReturnsSuccess()
+        {
+            //creo una bdd con un admin
+            Database db = new Database("admin", "adminPassword");
+
+            //creo una tabla y la añado
+            List<ColumnDefinition> columns = new List<ColumnDefinition>()
+            {
+                new ColumnDefinition(ColumnDefinition.DataType.String, "Name")
+            };
+            Table table = new Table("People", columns);
+            db.AddTable(table);
+
+            //creo un comando DropTable
+            DropTable drop = new DropTable("People");
+
+            //lo ejecuto
+            string result = drop.Execute(db);
+
+            Assert.Equal(Constants.DropTableSuccess, result);
+
+            //la tabla ya no existe
+            Assert.Null(db.TableByName("People"));
+        }
+
+        [Fact]
+        public void DropTableExecute_NonExistingTable_ReturnsError()
+        {
+            Database db = new Database("admin", "adminPassword");
+
+            //no añado tabla
+            DropTable drop = new DropTable("NoExiste");
+
+            string result = drop.Execute(db);
+
+            Assert.Equal(Constants.TableDoesNotExistError, result);
+        }
     }
 }

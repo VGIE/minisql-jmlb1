@@ -32,6 +32,16 @@ namespace SecurityParsingTests
         }
 
         [Fact]
+        public void IncorrectWithSpaces()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE new profile") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof ile") as CreateSecurityProfile;
+            Assert.Null(query);
+        }
+
+        [Fact]
         public void IncorrectCapitalization()
         {
             CreateSecurityProfile query = MiniSQLParser.Parse("Create SECURITY PROFILE profile") as CreateSecurityProfile;
@@ -68,6 +78,80 @@ namespace SecurityParsingTests
 
             query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile") as CreateSecurityProfile;
             Assert.NotNull(query);
+        }
+
+
+        [Fact]
+        public void IncorrectProfileWithNumbers()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE prof123") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE 123prof") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE p1r2o3f") as CreateSecurityProfile;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void IncorrectProfileWithUnserscore()
+        {
+            CreateSecurityProfile query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile_one") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE _profile") as CreateSecurityProfile;
+            Assert.Null(query);
+
+            query = MiniSQLParser.Parse("CREATE SECURITY PROFILE profile_") as CreateSecurityProfile;
+            Assert.Null(query);
+        }
+
+        [Fact]
+        public void CreateSecurityProfileExecute_Admin_CreatesProfile()
+        {
+            //1.creo una bd con un usuario admin
+            Database db = new Database("admin", "adminPassword");
+
+            //2.añado el perfil y meto al usuario "admin" dentro
+            Profile adminProfile = new Profile();
+            adminProfile.Name = "Admin";
+            adminProfile.Users.Add(new User("admin", "adminPassword"));
+            db.SecurityManager.Profiles.Add(adminProfile);
+
+            //3. creo el comando CreateSecurityProfile para un nuevo perfil
+            CreateSecurityProfile cmd = new CreateSecurityProfile("perfil");
+
+            //4.lo ejecuto
+            string resultado = cmd.Execute(db);
+
+            Assert.Equal(Constants.CreateSecurityProfileSuccess, resultado);
+
+            Assert.NotNull(db.SecurityManager.ProfileByName("perfil"));
+        }
+
+        [Fact]
+        public void CreateSecurityProfileExecute_NoAdmin_ReturnsError()
+        {
+            //1.dreo una base de datos con un usuario normal sin ser admin
+            Database db = new Database("maria", "pass");
+
+            //2.no añado perfil admin, así que IsUserAdmin será false
+
+            Profile normal = new Profile();
+            normal.Name = "Normal";
+            normal.Users.Add(new User("maria", "pass"));
+            db.SecurityManager.Profiles.Add(normal);
+
+            //3.intento crear un perfil
+            CreateSecurityProfile cmd = new CreateSecurityProfile("perfil");
+            string resultado = cmd.Execute(db);
+
+            //4.debe devolver el error de falta de privilegios
+            Assert.Equal(Constants.UsersProfileIsNotGrantedRequiredPrivilege, resultado);
+
+            //5. y el perfil "Invitado" NO se ha creado
+            Assert.Null(db.SecurityManager.ProfileByName("perfil"));
         }
     }
 }
