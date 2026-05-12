@@ -38,9 +38,9 @@ namespace DbManager
 
             const string dropSecurityProfilePattern = @"DROP\s+SECURITY\s+PROFILE\s+([a-zA-Z]+)$";
 
-            const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
+            const string grantPattern = @"^GRANT\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([  A-Za-z][A-Za-z0-9]*)\s+TO\s+([A-Za-z][A-Za-z0-9]*)\s*;?\s*$";
 
-            //const string revokePattern = @"^REVOKE\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([a-zA-Z][a-zA-Z0-9]*)\s+TO\s+([a-zA-Z][a-zA-Z0-9]*)$";
+            const string revokePattern = @"^REVOKE\s+(DELETE|INSERT|SELECT|UPDATE)\s+ON\s+([a-zA-Z][a-zA-Z0-9]*)\s+TO\s+([a-zA-Z][a-zA-Z0-9]*)$";
 
             const string addUserPattern = @"ADD\s+USER\s+\(([a-zA-Z][a-zA-Z0-9]*),([^,]+),([a-zA-Z][a-zA-Z0-9]*)\)$";
 
@@ -312,7 +312,7 @@ namespace DbManager
                 string profileName = matchCreateSecurity.Groups[1].Value;
                 return new CreateSecurityProfile(profileName);
             }
-            /*
+            
             // Revoke
             Match matchRevoke = Regex.Match(miniSQLQuery, revokePattern);
             if (matchRevoke.Success)
@@ -328,7 +328,7 @@ namespace DbManager
 
                 return new Revoke(permission, tableName, profileName);
             }
-            */
+            
             // DeleteUser
             Match matchDeleteUser = Regex.Match(miniSQLQuery, deleteUserPattern);
             if (matchDeleteUser.Success)

@@ -108,50 +108,34 @@ namespace SecurityParsingTests
         }
 
         [Fact]
-        public void CreateSecurityProfileExecute_Admin_CreatesProfile()
+        public void CheckPermissions()
         {
-            //1.creo una bd con un usuario admin
-            Database db = new Database("admin", "adminPassword");
+            //admin si puede crear
+            Database dbAdmin = new Database("admin", "adminPassword");
 
-            //2.añado el perfil y meto al usuario "admin" dentro
             Profile adminProfile = new Profile();
             adminProfile.Name = "Admin";
             adminProfile.Users.Add(new User("admin", "adminPassword"));
-            db.SecurityManager.Profiles.Add(adminProfile);
+            dbAdmin.SecurityManager.Profiles.Add(adminProfile);
 
-            //3. creo el comando CreateSecurityProfile para un nuevo perfil
-            CreateSecurityProfile cmd = new CreateSecurityProfile("perfil");
+            CreateSecurityProfile query = new CreateSecurityProfile("test");
+            string result = query.Execute(dbAdmin);
 
-            //4.lo ejecuto
-            string resultado = cmd.Execute(db);
+            Assert.Equal(Constants.CreateSecurityProfileSuccess, result);
+            Assert.NotNull(dbAdmin.SecurityManager.ProfileByName("test"));
 
-            Assert.Equal(Constants.CreateSecurityProfileSuccess, resultado);
-
-            Assert.NotNull(db.SecurityManager.ProfileByName("perfil"));
-        }
-
-        [Fact]
-        public void CreateSecurityProfileExecute_NoAdmin_ReturnsError()
-        {
-            //1.dreo una base de datos con un usuario normal sin ser admin
-            Database db = new Database("maria", "pass");
-
-            //2.no añado perfil admin, así que IsUserAdmin será false
+            //usuario normal no puede crear perfil
+            Database dbUser = new Database("jorge", "pass");
 
             Profile normal = new Profile();
             normal.Name = "Normal";
-            normal.Users.Add(new User("maria", "pass"));
-            db.SecurityManager.Profiles.Add(normal);
+            normal.Users.Add(new User("jorge", "pass"));
+            dbUser.SecurityManager.Profiles.Add(normal);
 
-            //3.intento crear un perfil
-            CreateSecurityProfile cmd = new CreateSecurityProfile("perfil");
-            string resultado = cmd.Execute(db);
+            result = query.Execute(dbUser);
 
-            //4.debe devolver el error de falta de privilegios
-            Assert.Equal(Constants.UsersProfileIsNotGrantedRequiredPrivilege, resultado);
-
-            //5. y el perfil "Invitado" NO se ha creado
-            Assert.Null(db.SecurityManager.ProfileByName("perfil"));
+            Assert.Equal(Constants.UsersProfileIsNotGrantedRequiredPrivilege, result);
+            Assert.Null(dbUser.SecurityManager.ProfileByName("test"));
         }
     }
 }
