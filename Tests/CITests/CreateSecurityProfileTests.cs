@@ -113,11 +113,9 @@ namespace SecurityParsingTests
             //admin si puede crear
             Database dbAdmin = new Database("admin", "adminPassword");
 
-            Profile adminProfile = new Profile();
-            adminProfile.Name = "Admin";
+            Profile adminProfile = dbAdmin.SecurityManager.ProfileByName("Admin");
             adminProfile.Users.Add(new User("admin", "adminPassword"));
-            dbAdmin.SecurityManager.Profiles.Add(adminProfile);
-
+            
             CreateSecurityProfile query = new CreateSecurityProfile("test");
             string result = query.Execute(dbAdmin);
 

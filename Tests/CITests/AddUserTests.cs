@@ -93,54 +93,39 @@ namespace SecurityParsingTests
         [Fact]
         public void Execute_SiAdminPerfilNoExiste()
         {
-            
-            Database db = new Database("admin", "adminPassword");
+            Database db = new Database("Admin", "adminPassword");
 
-            // Creamos perfil administrador para que puede añadir
-            Profile adminProfile = new Profile();
-            adminProfile.Name = "Admin";
-                       
-            User adminUser = new User("admin", "adminPassword");
-            adminProfile.Users.Add(adminUser);
+            // usuario Admin al perfil Admin
+            Profile adminProfile = db.SecurityManager.ProfileByName("Admin");
+            adminProfile.Users.Add(new User("Admin", "adminPassword"));
 
-            db.SecurityManager.Profiles.Add(adminProfile);  
-
-            //intento de añadir un usuario a un perifl que no existe
+            // Intentar añadir a perfil que no existe
             AddUser query = new AddUser("nuevoUsuario", "password", "PerfilInexistente");
+            string result = query.Execute(db);
 
-            
-            string res = query.Execute(db);
-
-            Assert.Equal(Constants.SecurityProfileDoesNotExistError, res);
+            Assert.Equal(Constants.SecurityProfileDoesNotExistError, result);
         }
 
 
         [Fact]
         public void Execute_SiAdminPerfilExiste()
         {
-            
-            Database db = new Database("admin", "adminPassword");
+            Database db = new Database("Admin", "adminPassword");
 
-            Profile adminProfile = new Profile();
-            adminProfile.Name = "Admin";
+            // usuario Admin al perfil Admin
+            Profile adminProfile = db.SecurityManager.ProfileByName("Admin");
+            adminProfile.Users.Add(new User("Admin", "adminPassword"));
 
-            User adminUser = new User("admin", "adminPassword");
-            adminProfile.Users.Add(adminUser);
-
-            db.SecurityManager.Profiles.Add(adminProfile);  
-
-            Profile prof = new Profile();
-            prof.Name = "Perfil";
-            db.SecurityManager.Profiles.Add(prof);  
+            // Crear el perfil 
+            Profile profile = new Profile { Name = "Perfil" };
+            db.SecurityManager.Profiles.Add(profile);
 
             AddUser query = new AddUser("nuevoUsuario", "pass123", "Perfil");
-
             string result = query.Execute(db);
 
             Assert.Equal(Constants.AddUserSuccess, result);
-            
         }
-                     
+
 
     }
 }
