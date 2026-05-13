@@ -14,20 +14,35 @@ namespace SecurityParsingTests
         [Fact]
         public void Correct()
         {
-            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO Admin") as Grant;
             Assert.Equal("DELETE", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
 
-            query = MiniSQLParser.Parse("GRANT INSERT ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT INSERT ON Table TO Admin") as Grant;
             Assert.Equal("INSERT", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
 
-            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO Admin") as Grant;
             Assert.Equal("SELECT", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
+
+            query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO Admin") as Grant;
+            Assert.Equal("UPDATE", query.PrivilegeName);
+            Assert.Equal("Table", query.TableName);
+            Assert.Equal("Admin", query.ProfileName);
+        }
+
+        [Fact]
+        public void ValidQueryWithAnotherPrivilege()
+        {
+            var query = MiniSQLParser.Parse("GRANT INSERT ON Products TO manager") as Grant;
+            Assert.NotNull(query);
+            Assert.Equal("INSERT", query.PrivilegeName);
+            Assert.Equal("Products", query.TableName);
+            Assert.Equal("manager", query.ProfileName);
 
             query = MiniSQLParser.Parse("GRANT UPDATE ON Table TO User") as Grant;
             Assert.Equal("UPDATE", query.PrivilegeName);
@@ -35,97 +50,98 @@ namespace SecurityParsingTests
             Assert.Equal("User", query.ProfileName);
         }
 
+
         [Fact]
         public void CorrectWithSpaces()
         {
-            Grant query = MiniSQLParser.Parse("GRANT DELETE    ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT DELETE    ON Table TO Admin") as Grant;
             Assert.Equal("DELETE", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
 
-            query = MiniSQLParser.Parse("GRANT INSERT ON Table    TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT INSERT ON Table    TO Admin") as Grant;
             Assert.Equal("INSERT", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
 
-            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO     User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO     Admin") as Grant;
             Assert.Equal("SELECT", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
 
-            query = MiniSQLParser.Parse("GRANT    UPDATE     ON    Table    TO     User") as Grant;
+            query = MiniSQLParser.Parse("GRANT    UPDATE     ON    Table    TO     Admin") as Grant;
             Assert.Equal("UPDATE", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
         }
 
         [Fact]
         public void IncorrectCapitalization()
         {
-            Grant query = MiniSQLParser.Parse("Grant DELETE ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("Grant DELETE ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT Insert ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT Insert ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT SELECT on Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT on Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT UPDATE ON Table To User") as Grant;
+            query = MiniSQLParser.Parse("GRANT UPDATE ON Table To Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO Admin") as Grant;
             Assert.NotNull(query);
         }
 
         [Fact]
         public void IncorrectProfileWithErrorProfileName()
         {
-            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User 1") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table TO admin 1") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT INSERT ON Table TO Us er") as Grant;
+            query = MiniSQLParser.Parse("GRANT INSERT ON Table TO adm in") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO User-1") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT ON Table TO Admin-1") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT UPDATE ON Table To User_2") as Grant;
+            query = MiniSQLParser.Parse("GRANT UPDATE ON Table To Admin_2") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO Admin ") as Grant;
             Assert.NotNull(query);
         }
 
         [Fact]
         public void IncorrectPrivileges()
         {
-            Grant query = MiniSQLParser.Parse("GRANT Remove ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT Remove ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT REMOVE ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT REMOVE ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT UPGRADE ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT UPGRADE ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT SET ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SET ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT DELETE ON Table TO Admin") as Grant;
             Assert.NotNull(query);
         }
 
         [Fact]
         public void IncorrectWithoutOnePart()
         {
-            Grant query = MiniSQLParser.Parse("GRANT ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT SELECT ON TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT ON TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT SELECT TO User") as Grant;
+            query = MiniSQLParser.Parse("GRANT SELECT TO Admin") as Grant;
             Assert.Null(query);
 
             query = MiniSQLParser.Parse("GRANT SELECT ON Table TO") as Grant;
@@ -155,34 +171,34 @@ namespace SecurityParsingTests
         [Fact]
         public void IncorrectKeywordOrder()
         {
-            Grant query = MiniSQLParser.Parse("SELECT GRANT ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("SELECT GRANT ON Table TO Admin") as Grant;
             Assert.Null(query);
 
-            query = MiniSQLParser.Parse("GRANT TO User ON Table SELECT") as Grant;
+            query = MiniSQLParser.Parse("GRANT TO Admin ON Table SELECT") as Grant;
             Assert.Null(query);
         }
 
         [Fact]
         public void IncorrectWithoutKeywordTO()
         {
-            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT DELETE ON Table Admin") as Grant;
             Assert.Null(query);
         }
 
         [Fact]
         public void IncompletePrivilegeShouldFail()
         {
-            Grant query = MiniSQLParser.Parse("GRANT UPD ON Table TO User") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT UPD ON Table TO Admin") as Grant;
             Assert.Null(query);
         }
 
         [Fact]
         public void ValidWithMultipleSpacesAndTabs()
         {
-            Grant query = MiniSQLParser.Parse("GRANT\tSELECT \t ON\tTable\tTO\tUser") as Grant;
+            Grant query = MiniSQLParser.Parse("GRANT\tSELECT \t ON\tTable\tTO\tAdmin") as Grant;
             Assert.Equal("SELECT", query.PrivilegeName);
             Assert.Equal("Table", query.TableName);
-            Assert.Equal("User", query.ProfileName);
+            Assert.Equal("Admin", query.ProfileName);
         }
 
         [Fact]

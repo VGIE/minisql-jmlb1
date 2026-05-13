@@ -37,8 +37,9 @@ namespace DbManager
 
             //crear el perfil de Admin
             Profile adminProfile = new Profile{ Name = "Admin" };
-            //User adminUser = new User(adminUsername, adminPassword);
-            //adminProfile.Users.Add(adminUser);
+            User adminUser = new User(adminUsername, adminPassword);
+            adminProfile.Users.Add(adminUser);
+
             SecurityManager.Profiles.Add(adminProfile);
 
 

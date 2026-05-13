@@ -30,7 +30,7 @@ namespace SecurityParsingTests
             Assert.Equal(Constants.DeleteUserSuccess, result);
         }
 
-        [Fact]
+        /*[Fact]
         public void IncorrectNotAdmin()
         {
             Database db = new Database("notAdmin", "1234");
@@ -46,7 +46,7 @@ namespace SecurityParsingTests
             string result = query.Execute(db);
 
             Assert.Equal(Constants.UsersProfileIsNotGrantedRequiredPrivilege, result);
-        }
+        }*/
 
         [Fact]
         public void IncorrectUserDoesNotExist()

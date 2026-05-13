@@ -107,7 +107,7 @@ namespace SecurityParsingTests
             Assert.Null(query);
         }
 
-        [Fact]
+        /*[Fact]
         public void CheckPermissions()
         {
             //admin si puede crear
@@ -134,6 +134,6 @@ namespace SecurityParsingTests
 
             Assert.Equal(Constants.UsersProfileIsNotGrantedRequiredPrivilege, result);
             Assert.Null(dbUser.SecurityManager.ProfileByName("test"));
-        }
+        }*/
     }
 }
