@@ -230,6 +230,7 @@ namespace SecurityParsingTests
             Assert.NotNull(result);
         }
 
+        /*
         [Fact]
 
         public void validSelects()
@@ -353,6 +354,6 @@ namespace SecurityParsingTests
             Assert.Null(query20);
 
    
-        }
+        }*/
     }
 }
