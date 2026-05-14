@@ -29,7 +29,7 @@ namespace DbManager
             {
                 return Constants.UsersProfileIsNotGrantedRequiredPrivilege;
             }
-
+            
             Profile profile = database.SecurityManager.ProfileByName(ProfileName);
             if (profile == null || string.IsNullOrEmpty(TableName))
             {
